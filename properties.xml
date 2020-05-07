@@ -1,0 +1,10 @@
+<map>
+  <entry>
+    <string>version</string>
+    <string>1.6.1</string>
+  </entry>
+  <entry>
+    <string>herolab</string>
+    <boolean>false</boolean>
+  </entry>
+</map>
