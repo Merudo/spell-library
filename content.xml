@@ -314,23 +314,13 @@ Update 1.1 (5/4/2020)
 [h: vMacro = getMacroCommand( listGet(vIndex, 0), vLib, vMap)]
 
 
-[h: &quot;First, try the current token.&quot;]
-[h: vCurrentId = currentToken()]
+[h: &quot;Get correct JS script from the displayLibrary macro&quot;]
+[h: vIndexLibrary = getMacroIndexes(&apos;displayLibrary&apos;, &apos;,&apos;, vLib, vMap)]
+[h: vMacroLibrary = getMacroCommand( listGet(vIndexLibrary, 0), vLib, vMap)]
 
-[h: &quot;If current token is library, don&apos;t take it&quot;] 
-[h, if (vCurrentId != &quot;&quot;), CODE:{ [if(getName(vCurrentId) == vLib): vCurrentId = &quot;&quot;]};{}]
-
-[h: &quot;If no valid token, take the impersonated.&quot;]
-[h, if (vCurrentId == &quot;&quot;), CODE:{ [vCurrentId = getImpersonated()]};{}]
-
-[h: &quot;If impersonated token is library, don&apos;t take it&quot;] 
-[h, if (vCurrentId != &quot;&quot;), CODE:{ [if(getName(vCurrentId) == vLib): vCurrentId = &quot;&quot;]};{}]
-
-[h: &quot;If still no valid token, take first in selection.&quot;]
-[h, if (vCurrentId == &quot;&quot;), CODE:{ [vCurrentId = listGet(getSelected(),0)]};{}]
-
-[h: &quot;If first token is library, don&apos;t take it&quot;] 
-[h, if (vCurrentId != &quot;&quot;), CODE:{ [if(getName(vCurrentId) == vLib): vCurrentId = &quot;&quot;]};{}]
+[h: &quot;Get the token used to learn or cast the spells&quot;]
+[macro(&quot;getCasterToken@Lib:SpellLibrary&quot;):&quot;&quot;]
+[h: vCurrentId = macro.return]
 
 
 [h: &quot;If valid token, take known spell list&quot;]
@@ -357,51 +347,9 @@ Update 1.1 (5/4/2020)
 
 [macro(&quot;formElements@&quot; + vLib):json.set(&quot;{}&quot;, &quot;Name&quot;, vName, &quot;CurrentId&quot;, vCurrentId, &quot;ShowList&quot;, 1, &quot;Cast&quot;, vCast)]
 
-&lt;script&gt;
-[r: &quot;
-	// Add event listener so active classe set to the current button (highlight it)
-	let classContainer = document.getElementById(&apos;classContainer&apos;);
-	addSelectorListeners(classContainer, &apos;selectorAll&apos;);
-
-	classContainer = document.getElementById(&apos;sourceContainer&apos;);
-	addSelectorListeners(classContainer, &apos;sourceAll&apos;);	
-
-	classContainer = document.getElementById(&apos;levelContainer&apos;);
-	addSelectorListeners(classContainer, &apos;levelAll&apos;);		
-
-	function addSelectorListeners(container, idAll){
-		let selectors = container.getElementsByClassName(&apos;selector&apos;);
-		for (let i = 0; i &lt; selectors.length; i++) {		
-			selectors[i].addEventListener(&apos;click&apos;, function(){
-
- 			if (this.id === idAll){
-				let currents = container.getElementsByClassName(&apos;active&apos;);
-				for (let h = currents.length-1; h &gt;= 0; h--) {
-					currents[h].className = currents[h].className.replace(&apos; active&apos;, &apos;&apos;);
-				}
-				this.className += &apos; active&apos;;
- 			}  else {
-				if(this.className.includes(&apos;active&apos;)){
-					this.className = this.className.replace(&apos; active&apos;, &apos;&apos;);
-					let currents = container.getElementsByClassName(&apos;active&apos;);
-					if (currents.length == 0){
-						let selectorAll = document.getElementById(idAll);
-						selectorAll.className += &apos; active&apos;;
-					}
-				} else {
-					this.className += &apos; active&apos;;
-					let selectorAll = document.getElementById(idAll);
-					selectorAll.className = selectorAll.className.replace(&apos; active&apos;, &apos;&apos;);
-				}
- 			}
- 			filterSpells();
-		});
-	}
-	}
-
-&quot;]
-&lt;/script&gt;
 [r: vMacro]
+[r: vMacroLibrary]
+
 &lt;script&gt; 
 	var vSpells = [r: getLibProperty(&apos;Spells&apos;, vLib)];
 	var vKnown  = [r: vKnown];
@@ -434,362 +382,6 @@ Update 1.1 (5/4/2020)
 	var linkShare = &quot;[r: macroLinkText(&apos;share@Lib:SpellLibrary&apos;, &apos;all&apos;, &apos;&apos;, vCurrentId)]&quot;;
 
 	const QuoteSymbol = unescape(&quot;%27&quot;);
-
-    [r: &quot;function CreateTable(){
-		try{
-
-        let table = document.createElement(&apos;table&apos;);
-
-        table.id = &apos;spellTable&apos;;
-
-        let arrHead = new Array();
-        
-        arrHead = [&apos;Level&apos;, &apos;Name&apos;, &apos;&apos;, &apos;Cast Time&apos;, &apos;Duration&apos;, &apos;Save&apos;, &apos;Range&apos;, &apos;Source&apos;, &apos;&apos;];
-        if (vCast){ arrHead.unshift(&apos;&apos;);}  // Preparation
-		if (vIsToken){ arrHead.push(&apos;&apos;);} // Learn / Forget button
-
-        let tr = table.insertRow(-1);
-        for (let h = 0; h &lt; arrHead.length; h++) {
-            let th = document.createElement(&apos;th&apos;);
-            th.className = &apos;spellHeader&apos;;
-            th.textContent = arrHead[h];
-            tr.appendChild(th);
-        }
-
-        for (let c = 0; c &lt; vLength; c++) {
-			let vSpell = vListedSpells[c];
-			let td;
-        	
-            tr = table.insertRow(-1);
-            tr.id = vSpell.name;
-
-            // Prepare
-
-            if (vCast){
-            	createTogglePrepButton(tr, vSpell);
-            }
-
-            // Classes list
-            let classesArray = [];
-
-			if (vSpell.classes &amp;&amp;  vSpell.classes.fromClassList){
-				for (let ci = 0; ci &lt; vSpell.classes.fromClassList.length; ci++){
-					classesArray.push(vSpell.classes.fromClassList[ci].name);
-				}
-        	}
-			if (vSpell.classes &amp;&amp; vSpell.classes.fromSubclass){
-				classesArray.push(&apos;Subclass&apos;);
-			}
-			if (vSpell.races){
-				classesArray.push(&apos;Race&apos;);
-			}
-			tr.setAttribute(&apos;data-classes&apos;, classesArray.join(&apos;,&apos;));
-
-			// Source
-			tr.setAttribute(&apos;data-source&apos;, vSpell.source);
-
-			// Levels
-			tr.setAttribute(&apos;data-level&apos;, vSpell.level);
-			
-            td = tr.insertCell(-1);
-			td.textContent = capitalize(GetStringSpellLevel(vSpell.level));
-			td.style.textAlign = &apos;center&apos;;
-			td.setAttribute(&apos;data-sort&apos;, vSpell.level);
-			
-            // Name
-            td = tr.insertCell(-1);
-			vName = vSpell.name;
-            td.textContent = vName;
-
-            // Tag
-            let vTags = new Array();
-            if (vSpell.duration[0].concentration){
-				vTags.push(&apos;C&apos;);
-            }
-            if (vSpell.meta &amp;&amp; vSpell.meta.ritual){
-				vTags.push(&apos;R&apos;); 
-            }
-            td = tr.insertCell(-1);
-            td.textContent = vTags.join(&apos;,&apos;);
-
-             // Casting time
-			let vTime = vSpell.time[0];
-            td = tr.insertCell(-1);
-            td.textContent = vTime.number + &apos; &apos; + vTime.unit;
-            td.style.textAlign = &apos;center&apos;;
-            td.setAttribute(&apos;data-sort&apos;, vSpell.time[0].inMinutes);
-
-            // Duration
-    		let vDuration = vSpell.duration[0];
-            td = tr.insertCell(-1);
-            td.setAttribute(&apos;data-sort&apos;, vSpell.duration[0].inMinutes);
-            
-
-			if (vDuration.type == &apos;timed&apos;){
-				td.textContent = vDuration.duration.amount + &apos; &apos; + vDuration.duration.type;
-			} else {
-            	td.textContent = capitalize(vDuration.type);					
-			}
-			td.style.textAlign = &apos;center&apos;;
-
-
-			// Save
-            td = tr.insertCell(-1);
-			
-			if (vSpell[&apos;savingThrow&apos;]){
-				td.textContent = vSpell[&apos;savingThrow&apos;][0].substring(0,3);
-			}
-			td.style.textAlign = &apos;center&apos;;
-
-
-			// Range
-            td = tr.insertCell(-1);
-			td.textContent = capitalize(GetRange(vSpell));
-			td.style.textAlign = &apos;right&apos;;
-			td.setAttribute(&apos;data-sort&apos;, vSpell.range.inFeet);
-
-			// Source
-            td = tr.insertCell(-1);
-			td.textContent = vSpell[&apos;source&apos;];
-			td.style.textAlign = &apos;center&apos;;
-
-			// Learn / Forget button
-			if (vIsToken){
-           		td = document.createElement(&apos;td&apos;);
-           		td = tr.insertCell(-1);
-           		let btn = createLearnButton(vSpell.name);
-				
-				td.appendChild(btn);
-			}
-
-
-			// Plus sign to expend
-            td = tr.insertCell(-1);
-            td.className = &apos;toggle&apos;;
-			td.textContent= &apos;+&apos;;
-			td.id = &apos;Toggle-&apos; + vName;
-			
-			// Full spell description
-			let trDesc = table.insertRow(-1);
-			trDesc.style.display = &apos;none&apos;;
-			trDesc.id = &apos;Desc-&apos; + vSpell.name;
-
-            let tdDesc = trDesc.insertCell(-1);
-  			let hr = document.createElement(&apos;hr&apos;); hr.className = &apos;divider&apos;; tdDesc.appendChild(hr);
-
-			tdDesc.colSpan = arrHead.length;
-			tdDesc.appendChild(GetSpellDesc(vSpell));
-
-			// End of spell description
-  			hr = document.createElement(&apos;hr&apos;); hr.className = &apos;divider&apos;; tdDesc.append(hr);			
-
-			td.addEventListener(&apos;click&apos;, function(){
-				if (trDesc.style.display == &apos;none&apos;){
-					trDesc.style.display = &apos;table-row&apos;;
-					td.textContent = &apos;-&apos;;
-				} else {
-					trDesc.style.display = &apos;none&apos;;
-					td.textContent = &apos;+&apos;;
-				}
-			});
-
-
-        }
-
-
-        //ADD THE NEWLY CREATED TABLE TO THE BODY.
-        document.body.appendChild(table);
-
-        // Refreshes the table
-        filterSpells();
-
-		enableSortSpellTable(table);        
-		} catch (err){
-			console.log(err);
-		}
-
-
-    }
-    
-
-    function enableSortSpellTable(table){
-		const getCellValue = (tr, idx) =&gt; {
-			let cell = tr.children[idx];
-			return cell.getAttribute(&apos;data-sort&apos;) || cell.innerText;
-		};
-
-		const comparer = (idx, asc) =&gt; (a, b) =&gt; ((v1, v2) =&gt; 
-    		v1 !== &apos;&apos; &amp;&amp; v2 !== &apos;&apos; &amp;&amp; !isNaN(v1) &amp;&amp; !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
-    		)(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
-
-		table.querySelectorAll(&apos;th.spellHeader&apos;).forEach(th =&gt; th.addEventListener(&apos;click&apos;, (() =&gt; {
-			try{
-    			let tableRows = Array.from(table.rows);
-    			tableRows.shift();             // remove header row
-    			tableRows = tableRows.filter((element, index) =&gt; {  return index % 2 === 0;});
-    			tableRows.sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
-        					 .forEach(tr =&gt; {   table.appendChild(tr);  table.appendChild(document.getElementById(&apos;Desc-&apos; + tr.id));});
-			} catch (err){ console.log(err); }
-		})));
-    }
-
-	function createTogglePrepButton(tr, spell){
-			td = tr.insertCell(-1);
-			let div = document.createElement(&apos;div&apos;);
-			td.appendChild(div);
-			td.className = &apos;unselectable&apos;;
-			div.className = &apos;circle&apos;;
-
-			if (spell.level == 0){
-				div.className += &apos; always&apos;;
-				div.setAttribute(&apos;data-sort&apos;, &apos;A&apos;);
-			} else {
-				let vIsPrepared = vKnown[spell.name].prepared === &apos;yes&apos;;				
-				if (vIsPrepared){
-					div.className += &apos; prepared&apos;;
-					td.setAttribute(&apos;data-sort&apos;, &apos;P&apos;);
-				} else {
-					td.setAttribute(&apos;data-sort&apos;, &apos;U&apos;);
-				}
-				
-				div.addEventListener(&apos;click&apos;,  createTogglePrepFunction(spell.name));
-			}
-	}
-
-    function createTogglePrepFunction(spellName){
-		return function(){
-			if (this.className.includes(&apos;prepared&apos;)){
-				this.className = this.className.replace(&apos; prepared&apos;, &apos;&apos;);
-				document.getElementById(&apos;formEditSpellAction&apos;).value = &apos;unprepare&apos;;
-				this.closest(&apos;td&apos;).setAttribute(&apos;data-sort&apos;, &apos;U&apos;);
-			} else {
-				this.className = this.className + &apos; prepared&apos;;
-				document.getElementById(&apos;formEditSpellAction&apos;).value = &apos;prepare&apos;;	
-				this.closest(&apos;td&apos;).setAttribute(&apos;data-sort&apos;, &apos;P&apos;);
-			}
-						
-			document.getElementById(&apos;formEditSpellName&apos;).value = spellName;	
-			document.getElementById(&apos;formEditSpell&apos;).submit();		
-		}
-    }
-
-	function createToggleLearnFunction(spellName){
-			return function(){
-				if (this.className == &apos;forget&apos;){
-					this.textContent = &apos;Learn&apos;;
-					this.className   = &apos;learn&apos;;	
-					document.getElementById(&apos;formEditSpellAction&apos;).value = &apos;forget&apos;;	
-				} else {
-					this.textContent = &apos;Forget&apos;;
-					this.className   = &apos;forget&apos;;
-					document.getElementById(&apos;formEditSpellAction&apos;).value = &apos;learn&apos;;
-					document.getElementById(&apos;formEditSpellStat&apos;).value = document.getElementById(&apos;DropButton-&apos; + spellName).innerHTML;
-				}
-				document.getElementById(&apos;formEditSpellName&apos;).value = spellName;	
-				document.getElementById(&apos;formEditSpell&apos;).submit();
-			}
-	}
-
-    function createLearnButton(spellName){
-		let btn = document.createElement(&apos;button&apos;);
-		if (vKnown.hasOwnProperty(spellName)){
-			btn.textContent = &apos;Forget&apos;;
-			btn.className   = &apos;forget&apos;;
-		} else {
-			btn.textContent = &apos;Learn&apos;;
-			btn.className   = &apos;learn&apos;;
-		}
-
-		btn.addEventListener(&apos;click&apos;,  createToggleLearnFunction(spellName));
-		return btn;
-    }
-
-    function filterKnownSpells(currentSpell){
-		return vKnown.hasOwnProperty(currentSpell.name);
-    }
-
-	function filterSpells() {
-		try {
-    	let input, filter, table, i, row, txtValue, rowId, toggle, classes, rowMatch, classMatch, sourceMatch;
-    	input = document.getElementById(&apos;seachBar&apos;);
-    	filter = input.value.toUpperCase();
-    	filter = filter.replace(QuoteSymbol, &apos;`&apos;);
-    	table = document.getElementById(&apos;spellTable&apos;);
-
-    	// Get allowed classes
-    	enabledClasses = document.getElementById(&apos;classContainer&apos;).getElementsByClassName(&apos;active&apos;);
-    	arrayEnabledClasses = new Array();
-    	for (m = 0; m &lt; enabledClasses.length; m++){
-			arrayEnabledClasses.push(enabledClasses[m].id.replace(&apos;selector&apos;, &apos;&apos;));
-    	}
-    	let isAllClassesAllowed = arrayEnabledClasses.includes(&apos;All&apos;);
-
-		// Get allowed sources
-    	enabledSources = document.getElementById(&apos;sourceContainer&apos;).getElementsByClassName(&apos;active&apos;);
-    	arrayEnabledSources = new Array();
-    	for (m = 0; m &lt; enabledSources.length; m++){
-			arrayEnabledSources.push(enabledSources[m].id.replace(&apos;source&apos;, &apos;&apos;));
-    	}
-    	let isAllSourcesAllowed = arrayEnabledSources.includes(&apos;All&apos;);
-
-    	// Get allowed levels
-    	enabledLevels = document.getElementById(&apos;levelContainer&apos;).getElementsByClassName(&apos;active&apos;);
-    	arrayEnabledLevels = new Array();
-    	for (m = 0; m &lt; enabledLevels.length; m++){
-			arrayEnabledLevels.push(enabledLevels[m].id.replace(&apos;level&apos;, &apos;&apos;));
-    	}
-    	let isAllLevelsAllowed = arrayEnabledLevels.includes(&apos;All&apos;);    	
-
-    	for (i = 1; i &lt; table.rows.length; i++) {
-        	row = table.rows.item(i);
-        	rowId = row.id;
-        	rowMatch = false;
-        	classMatch = false;
-        	sourceMatch = false;
-			if (rowId.startsWith(&apos;Desc-&apos;) == false){
-        		if (rowId.toUpperCase().indexOf(filter) &gt; -1) {
-					if (isAllClassesAllowed){
-						classMatch = true;
-					} else {
-						let arrayClasses = row.getAttribute(&apos;data-classes&apos;).split(&apos;,&apos;);
-						if (arrayClasses &amp;&amp; arrayClasses.some( item =&gt; arrayEnabledClasses.includes(item))){
-							classMatch = true;
-						}
-					}
-					if (classMatch){
-						if(isAllSourcesAllowed){
-							sourceMatch = true;
-						} else {
-							let source = row.getAttribute(&apos;data-source&apos;);
-							if(arrayEnabledSources.includes(source)){
-								sourceMatch = true;
-							}
-						}
-					}
-					if (sourceMatch){
-						if(isAllLevelsAllowed){
-							rowMatch = true;
-						} else {
-							let level = row.getAttribute(&apos;data-level&apos;);
-							if(arrayEnabledLevels.includes(level)){
-								rowMatch = true;
-							}
-						}
-					}
-        		}
-			}
-
-			if (rowMatch){
-            	row.style.display = &apos;table-row&apos;;
-            	toggle = document.getElementById(&apos;Toggle-&apos; + row.id);            		
-            	toggle.textContent = &apos;+&apos;;    
-			} else {
-				row.style.display = &apos;none&apos;;
-			}
-    	}
-		} catch (err){ console.log(err);}
-	}
-&quot;]
 &lt;/script&gt;
 
 &lt;body onload=&apos;CreateTable();&apos;&gt;&lt;/body&gt;
@@ -822,7 +414,7 @@ Update 1.1 (5/4/2020)
     <entry>
       <int>4</int>
       <net.rptools.maptool.model.MacroButtonProperties>
-        <macroUUID>f4957082-6add-4619-ba4b-7f1419ec932e</macroUUID>
+        <macroUUID>350164ae-a068-4e60-98cd-c3da01132647</macroUUID>
         <saveLocation>Token</saveLocation>
         <index>4</index>
         <colorKey>white</colorKey>
@@ -1055,7 +647,7 @@ a{
     <entry>
       <int>36</int>
       <net.rptools.maptool.model.MacroButtonProperties>
-        <macroUUID>d4fb4334-338b-48f2-84d9-c4fb1126882e</macroUUID>
+        <macroUUID>2f8376c1-bf7b-4220-b5a9-4d5464ea4c02</macroUUID>
         <saveLocation>Token</saveLocation>
         <index>36</index>
         <colorKey>default</colorKey>
@@ -1154,7 +746,497 @@ a{
         <minWidth></minWidth>
         <maxWidth></maxWidth>
         <allowPlayerEdits>false</allowPlayerEdits>
-        <toolTip>Form elements used to submit spel data.</toolTip>
+        <toolTip>Form elements used to submit spell data.</toolTip>
+        <displayHotKey>true</displayHotKey>
+        <commonMacro>false</commonMacro>
+        <compareGroup>true</compareGroup>
+        <compareSortPrefix>true</compareSortPrefix>
+        <compareCommand>true</compareCommand>
+        <compareIncludeLabel>true</compareIncludeLabel>
+        <compareAutoExecute>true</compareAutoExecute>
+        <compareApplyToSelectedTokens>true</compareApplyToSelectedTokens>
+      </net.rptools.maptool.model.MacroButtonProperties>
+    </entry>
+    <entry>
+      <int>37</int>
+      <net.rptools.maptool.model.MacroButtonProperties>
+        <macroUUID>62ac350a-f1b0-40b2-b0bc-fe3b439a3b35</macroUUID>
+        <saveLocation>Token</saveLocation>
+        <index>37</index>
+        <colorKey>default</colorKey>
+        <hotKey>None</hotKey>
+        <command>[h: vLib   = &apos;Lib:SpellLibrary&apos;]
+
+[h: &quot;First, try the current token.&quot;]
+[h: vCurrentId = currentToken()]
+
+[h: &quot;If current token is library, don&apos;t take it&quot;]
+[h, if (vCurrentId != &quot;&quot;), CODE:{ [if(getName(vCurrentId) == vLib): vCurrentId = &quot;&quot;]};{}]
+
+[h: &quot;If no valid token, take the impersonated.&quot;]
+[h, if (vCurrentId == &quot;&quot;): vCurrentId = getImpersonated()]
+
+[h: &quot;If impersonated token is library, don&apos;t take it&quot;]
+[h, if (vCurrentId != &quot;&quot;), CODE:{ [if(getName(vCurrentId) == vLib): vCurrentId = &quot;&quot;]};{}]
+
+[h: &quot;If still no valid token, take first in selection.&quot;]
+[h, if (vCurrentId == &quot;&quot;): vCurrentId = listGet(getSelected(),0)]
+
+[h: &quot;If first token is library, don&apos;t take it&quot;]
+[h, if (vCurrentId != &quot;&quot;), CODE:{ [if(getName(vCurrentId) == vLib): vCurrentId = &quot;&quot;]};{}]
+
+[h: macro.return = vCurrentId]</command>
+        <label>getCasterToken</label>
+        <group>6. Internal Macros</group>
+        <sortby></sortby>
+        <autoExecute>true</autoExecute>
+        <includeLabel>false</includeLabel>
+        <applyToTokens>false</applyToTokens>
+        <fontColorKey>black</fontColorKey>
+        <fontSize>1.00em</fontSize>
+        <minWidth></minWidth>
+        <maxWidth></maxWidth>
+        <allowPlayerEdits>false</allowPlayerEdits>
+        <toolTip>Returns the token to cast spells with.</toolTip>
+        <displayHotKey>true</displayHotKey>
+        <commonMacro>false</commonMacro>
+        <compareGroup>true</compareGroup>
+        <compareSortPrefix>true</compareSortPrefix>
+        <compareCommand>true</compareCommand>
+        <compareIncludeLabel>true</compareIncludeLabel>
+        <compareAutoExecute>true</compareAutoExecute>
+        <compareApplyToSelectedTokens>true</compareApplyToSelectedTokens>
+      </net.rptools.maptool.model.MacroButtonProperties>
+    </entry>
+    <entry>
+      <int>38</int>
+      <net.rptools.maptool.model.MacroButtonProperties>
+        <macroUUID>f48d63a3-ef7f-476f-9bf2-38678ffca282</macroUUID>
+        <saveLocation>Token</saveLocation>
+        <index>38</index>
+        <colorKey>default</colorKey>
+        <hotKey>None</hotKey>
+        <command>&lt;script&gt;
+
+	// Add event listener so active classe set to the current button (highlight it)
+	let classContainer = document.getElementById(&apos;classContainer&apos;);
+	addSelectorListeners(classContainer, &apos;selectorAll&apos;);
+
+	classContainer = document.getElementById(&apos;sourceContainer&apos;);
+	addSelectorListeners(classContainer, &apos;sourceAll&apos;);	
+
+	classContainer = document.getElementById(&apos;levelContainer&apos;);
+	addSelectorListeners(classContainer, &apos;levelAll&apos;);		
+
+	function addSelectorListeners(container, idAll){
+		let selectors = container.getElementsByClassName(&apos;selector&apos;);
+		for (let i = 0; i &lt; selectors.length; i++) {		
+			selectors[i].addEventListener(&apos;click&apos;, function(){
+
+ 			if (this.id === idAll){
+				let currents = container.getElementsByClassName(&apos;active&apos;);
+				for (let h = currents.length-1; h &gt;= 0; h--) {
+					currents[h].className = currents[h].className.replace(&apos; active&apos;, &apos;&apos;);
+				}
+				this.className += &apos; active&apos;;
+ 			}  else {
+				if(this.className.includes(&apos;active&apos;)){
+					this.className = this.className.replace(&apos; active&apos;, &apos;&apos;);
+					let currents = container.getElementsByClassName(&apos;active&apos;);
+					if (currents.length == 0){
+						let selectorAll = document.getElementById(idAll);
+						selectorAll.className += &apos; active&apos;;
+					}
+				} else {
+					this.className += &apos; active&apos;;
+					let selectorAll = document.getElementById(idAll);
+					selectorAll.className = selectorAll.className.replace(&apos; active&apos;, &apos;&apos;);
+				}
+ 			}
+ 			filterSpells();
+		});
+	}
+	}
+
+	// Creates the spell library table
+	function CreateTable(){
+		try{
+
+        let table = document.createElement(&apos;table&apos;);
+
+        table.id = &apos;spellTable&apos;;
+
+        let arrHead = new Array();
+        
+        arrHead = [&apos;Level&apos;, &apos;Name&apos;, &apos;&apos;, &apos;Cast Time&apos;, &apos;Duration&apos;, &apos;Save&apos;, &apos;Range&apos;, &apos;Source&apos;, &apos;&apos;];
+        if (vCast){ arrHead.unshift(&apos;&apos;);}  // Preparation
+		if (vIsToken){ arrHead.push(&apos;&apos;);} // Learn / Forget button
+
+		// Column names
+        let tr = table.insertRow(-1);
+        for (let h = 0; h &lt; arrHead.length; h++) {
+            let th = document.createElement(&apos;th&apos;);
+            th.className = &apos;spellHeader&apos;;
+            th.textContent = arrHead[h];
+            tr.appendChild(th);
+        }
+
+		// For each spell
+        for (let c = 0; c &lt; vLength; c++) {
+			let vSpell = vListedSpells[c];
+			let td;
+        	
+            tr = table.insertRow(-1);
+            tr.id = vSpell.name;
+
+            // Prepare
+
+            if (vCast){
+            	createTogglePrepButton(tr, vSpell);
+            }
+
+            // Classes list
+            let classesArray = [];
+
+			if (vSpell.classes &amp;&amp;  vSpell.classes.fromClassList){
+				for (let ci = 0; ci &lt; vSpell.classes.fromClassList.length; ci++){
+					classesArray.push(vSpell.classes.fromClassList[ci].name);
+				}
+        	}
+			if (vSpell.classes &amp;&amp; vSpell.classes.fromSubclass){
+				classesArray.push(&apos;Subclass&apos;);
+			}
+			if (vSpell.races){
+				classesArray.push(&apos;Race&apos;);
+			}
+			tr.setAttribute(&apos;data-classes&apos;, classesArray.join(&apos;,&apos;));
+
+			// Source
+			tr.setAttribute(&apos;data-source&apos;, vSpell.source);
+
+			// Levels
+			tr.setAttribute(&apos;data-level&apos;, vSpell.level);
+			
+            td = tr.insertCell(-1);
+			td.textContent = capitalize(GetStringSpellLevel(vSpell.level));
+			td.style.textAlign = &apos;center&apos;;
+			td.setAttribute(&apos;data-sort&apos;, vSpell.level);
+			
+            // Name
+            td = tr.insertCell(-1);
+			vName = vSpell.name;
+            td.textContent = vName;
+
+            // Tag
+            let vTags = new Array();
+            if (vSpell.duration[0].concentration){
+				vTags.push(&apos;C&apos;);
+            }
+            if (vSpell.meta &amp;&amp; vSpell.meta.ritual){
+				vTags.push(&apos;R&apos;); 
+            }
+            td = tr.insertCell(-1);
+            td.textContent = vTags.join(&apos;,&apos;);
+
+             // Casting time
+			let vTime = vSpell.time[0];
+            td = tr.insertCell(-1);
+            td.textContent = vTime.number + &apos; &apos; + vTime.unit;
+            td.style.textAlign = &apos;center&apos;;
+            td.setAttribute(&apos;data-sort&apos;, vSpell.time[0].inMinutes);
+
+            // Duration
+    		let vDuration = vSpell.duration[0];
+            td = tr.insertCell(-1);
+            td.setAttribute(&apos;data-sort&apos;, vSpell.duration[0].inMinutes);
+            
+
+			if (vDuration.type == &apos;timed&apos;){
+				td.textContent = vDuration.duration.amount + &apos; &apos; + vDuration.duration.type;
+			} else {
+            	td.textContent = capitalize(vDuration.type);					
+			}
+			td.style.textAlign = &apos;center&apos;;
+
+
+			// Save
+            td = tr.insertCell(-1);
+			
+			if (vSpell[&apos;savingThrow&apos;]){
+				td.textContent = vSpell[&apos;savingThrow&apos;][0].substring(0,3);
+			}
+			td.style.textAlign = &apos;center&apos;;
+
+
+			// Range
+            td = tr.insertCell(-1);
+			td.textContent = capitalize(GetRange(vSpell));
+			td.style.textAlign = &apos;right&apos;;
+			td.setAttribute(&apos;data-sort&apos;, vSpell.range.inFeet);
+
+			// Source
+            td = tr.insertCell(-1);
+			td.textContent = vSpell[&apos;source&apos;];
+			td.style.textAlign = &apos;center&apos;;
+
+			// Learn / Forget button
+			if (vIsToken){
+           		td = document.createElement(&apos;td&apos;);
+           		td = tr.insertCell(-1);
+           		let btn = createLearnButton(vSpell.name);
+				
+				td.appendChild(btn);
+			}
+
+
+			// Plus sign to expend
+            td = tr.insertCell(-1);
+            td.className = &apos;toggle&apos;;
+			td.textContent= &apos;+&apos;;
+			td.id = &apos;Toggle-&apos; + vName;
+			
+			// Full spell description
+			let trDesc = table.insertRow(-1);
+			trDesc.style.display = &apos;none&apos;;
+			trDesc.id = &apos;Desc-&apos; + vSpell.name;
+
+            let tdDesc = trDesc.insertCell(-1);
+  			let hr = document.createElement(&apos;hr&apos;); hr.className = &apos;divider&apos;; tdDesc.appendChild(hr);
+
+			tdDesc.colSpan = arrHead.length;
+			tdDesc.appendChild(GetSpellDesc(vSpell));
+
+			// End of spell description
+  			hr = document.createElement(&apos;hr&apos;); hr.className = &apos;divider&apos;; tdDesc.append(hr);			
+
+			td.addEventListener(&apos;click&apos;, function(){
+				if (trDesc.style.display == &apos;none&apos;){
+					trDesc.style.display = &apos;table-row&apos;;
+					td.textContent = &apos;-&apos;;
+				} else {
+					trDesc.style.display = &apos;none&apos;;
+					td.textContent = &apos;+&apos;;
+				}
+			});
+
+
+        }
+
+
+        //ADD THE NEWLY CREATED TABLE TO THE BODY.
+        document.body.appendChild(table);
+
+        // Refreshes the table
+        filterSpells();
+
+		enableSortSpellTable(table);        
+		} catch (err){
+			console.log(err);
+		}
+
+
+    }
+
+	//  Add the click listeners to the column names of the main table
+   function enableSortSpellTable(table){
+		const getCellValue = (tr, idx) =&gt; {
+			let cell = tr.children[idx];
+			return cell.getAttribute(&apos;data-sort&apos;) || cell.innerText;
+		};
+
+		const comparer = (idx, asc) =&gt; (a, b) =&gt; ((v1, v2) =&gt; 
+    		v1 !== &apos;&apos; &amp;&amp; v2 !== &apos;&apos; &amp;&amp; !isNaN(v1) &amp;&amp; !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+    		)(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+		table.querySelectorAll(&apos;th.spellHeader&apos;).forEach(th =&gt; th.addEventListener(&apos;click&apos;, (() =&gt; {
+			try{
+    			let tableRows = Array.from(table.rows);
+    			tableRows.shift();             // remove header row
+    			tableRows = tableRows.filter((element, index) =&gt; {  return index % 2 === 0;});
+    			tableRows.sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+        					 .forEach(tr =&gt; {   table.appendChild(tr);  table.appendChild(document.getElementById(&apos;Desc-&apos; + tr.id));});
+			} catch (err){ console.log(err); }
+		})));
+    }
+
+	// Creates the button to toggle preparation, including the click listeners.
+	function createTogglePrepButton(tr, spell){
+			td = tr.insertCell(-1);
+			let div = document.createElement(&apos;div&apos;);
+			td.appendChild(div);
+			td.className = &apos;unselectable&apos;;
+			div.className = &apos;circle&apos;;
+
+			if (spell.level == 0){
+				div.className += &apos; always&apos;;
+				div.setAttribute(&apos;data-sort&apos;, &apos;A&apos;);
+			} else {
+				let vIsPrepared = vKnown[spell.name].prepared === &apos;yes&apos;;				
+				if (vIsPrepared){
+					div.className += &apos; prepared&apos;;
+					td.setAttribute(&apos;data-sort&apos;, &apos;P&apos;);
+				} else {
+					td.setAttribute(&apos;data-sort&apos;, &apos;U&apos;);
+				}
+				
+				div.addEventListener(&apos;click&apos;,  createTogglePrepFunction(spell.name));
+			}
+	}
+
+	// Creates the function triggered when the user clicks the toggle prep button. This method keeps the context of the function.
+    function createTogglePrepFunction(spellName){
+		return function(){
+			if (this.className.includes(&apos;prepared&apos;)){
+				this.className = this.className.replace(&apos; prepared&apos;, &apos;&apos;);
+				document.getElementById(&apos;formEditSpellAction&apos;).value = &apos;unprepare&apos;;
+				this.closest(&apos;td&apos;).setAttribute(&apos;data-sort&apos;, &apos;U&apos;);
+			} else {
+				this.className = this.className + &apos; prepared&apos;;
+				document.getElementById(&apos;formEditSpellAction&apos;).value = &apos;prepare&apos;;	
+				this.closest(&apos;td&apos;).setAttribute(&apos;data-sort&apos;, &apos;P&apos;);
+			}
+						
+			document.getElementById(&apos;formEditSpellName&apos;).value = spellName;	
+			document.getElementById(&apos;formEditSpell&apos;).submit();		
+		}
+    }
+
+	// Creates the function triggered when the users clicks the toggle learn button. This method keeps the context of the function.
+	function createToggleLearnFunction(spellName){
+			return function(){
+				if (this.className == &apos;forget&apos;){
+					this.textContent = &apos;Learn&apos;;
+					this.className   = &apos;learn&apos;;	
+					document.getElementById(&apos;formEditSpellAction&apos;).value = &apos;forget&apos;;	
+				} else {
+					this.textContent = &apos;Forget&apos;;
+					this.className   = &apos;forget&apos;;
+					document.getElementById(&apos;formEditSpellAction&apos;).value = &apos;learn&apos;;
+					document.getElementById(&apos;formEditSpellStat&apos;).value = document.getElementById(&apos;DropButton-&apos; + spellName).innerHTML;
+				}
+				document.getElementById(&apos;formEditSpellName&apos;).value = spellName;	
+				document.getElementById(&apos;formEditSpell&apos;).submit();
+			}
+	}
+
+	// Creates the button to learn/forget a spell.
+    function createLearnButton(spellName){
+		let btn = document.createElement(&apos;button&apos;);
+		if (vKnown.hasOwnProperty(spellName)){
+			btn.textContent = &apos;Forget&apos;;
+			btn.className   = &apos;forget&apos;;
+		} else {
+			btn.textContent = &apos;Learn&apos;;
+			btn.className   = &apos;learn&apos;;
+		}
+
+		btn.addEventListener(&apos;click&apos;,  createToggleLearnFunction(spellName));
+		return btn;
+    }
+
+	// Filter to return true if the spell is known.
+    function filterKnownSpells(currentSpell){
+		return vKnown.hasOwnProperty(currentSpell.name);
+    }
+
+	// Filter the spells according to the buttons selected.
+	function filterSpells() {
+		try {
+    	let input, filter, table, i, row, txtValue, rowId, toggle, classes, rowMatch, classMatch, sourceMatch;
+    	input = document.getElementById(&apos;seachBar&apos;);
+    	filter = input.value.toUpperCase();
+    	filter = filter.replace(QuoteSymbol, &apos;`&apos;);
+    	table = document.getElementById(&apos;spellTable&apos;);
+
+    	// Get allowed classes
+    	enabledClasses = document.getElementById(&apos;classContainer&apos;).getElementsByClassName(&apos;active&apos;);
+    	arrayEnabledClasses = new Array();
+    	for (m = 0; m &lt; enabledClasses.length; m++){
+			arrayEnabledClasses.push(enabledClasses[m].id.replace(&apos;selector&apos;, &apos;&apos;));
+    	}
+    	let isAllClassesAllowed = arrayEnabledClasses.includes(&apos;All&apos;);
+
+		// Get allowed sources
+    	enabledSources = document.getElementById(&apos;sourceContainer&apos;).getElementsByClassName(&apos;active&apos;);
+    	arrayEnabledSources = new Array();
+    	for (m = 0; m &lt; enabledSources.length; m++){
+			arrayEnabledSources.push(enabledSources[m].id.replace(&apos;source&apos;, &apos;&apos;));
+    	}
+    	let isAllSourcesAllowed = arrayEnabledSources.includes(&apos;All&apos;);
+
+    	// Get allowed levels
+    	enabledLevels = document.getElementById(&apos;levelContainer&apos;).getElementsByClassName(&apos;active&apos;);
+    	arrayEnabledLevels = new Array();
+    	for (m = 0; m &lt; enabledLevels.length; m++){
+			arrayEnabledLevels.push(enabledLevels[m].id.replace(&apos;level&apos;, &apos;&apos;));
+    	}
+    	let isAllLevelsAllowed = arrayEnabledLevels.includes(&apos;All&apos;);    	
+
+    	for (i = 1; i &lt; table.rows.length; i++) {
+        	row = table.rows.item(i);
+        	rowId = row.id;
+        	rowMatch = false;
+        	classMatch = false;
+        	sourceMatch = false;
+			if (rowId.startsWith(&apos;Desc-&apos;) == false){
+        		if (rowId.toUpperCase().indexOf(filter) &gt; -1) {
+					if (isAllClassesAllowed){
+						classMatch = true;
+					} else {
+						let arrayClasses = row.getAttribute(&apos;data-classes&apos;).split(&apos;,&apos;);
+						if (arrayClasses &amp;&amp; arrayClasses.some( item =&gt; arrayEnabledClasses.includes(item))){
+							classMatch = true;
+						}
+					}
+					if (classMatch){
+						if(isAllSourcesAllowed){
+							sourceMatch = true;
+						} else {
+							let source = row.getAttribute(&apos;data-source&apos;);
+							if(arrayEnabledSources.includes(source)){
+								sourceMatch = true;
+							}
+						}
+					}
+					if (sourceMatch){
+						if(isAllLevelsAllowed){
+							rowMatch = true;
+						} else {
+							let level = row.getAttribute(&apos;data-level&apos;);
+							if(arrayEnabledLevels.includes(level)){
+								rowMatch = true;
+							}
+						}
+					}
+        		}
+			}
+
+			if (rowMatch){
+            	row.style.display = &apos;table-row&apos;;
+            	toggle = document.getElementById(&apos;Toggle-&apos; + row.id);            		
+            	toggle.textContent = &apos;+&apos;;    
+			} else {
+				row.style.display = &apos;none&apos;;
+			}
+    	}
+		} catch (err){ console.log(err);}
+	}
+    
+&lt;/script&gt;
+
+</command>
+        <label>displayLibrary</label>
+        <group>5. js</group>
+        <sortby></sortby>
+        <autoExecute>true</autoExecute>
+        <includeLabel>false</includeLabel>
+        <applyToTokens>false</applyToTokens>
+        <fontColorKey>black</fontColorKey>
+        <fontSize>1.00em</fontSize>
+        <minWidth></minWidth>
+        <maxWidth></maxWidth>
+        <allowPlayerEdits>false</allowPlayerEdits>
+        <toolTip>Displays the spell library table, including buttons to select class/level/source and header to sort the table.</toolTip>
         <displayHotKey>true</displayHotKey>
         <commonMacro>false</commonMacro>
         <compareGroup>true</compareGroup>
@@ -1800,6 +1882,7 @@ a{
 	const MultSymbol = unescape(&apos;%D7&apos;);
 	const RegexNum   = /[^0-9]/g;
 
+	// Removes non-numeric characters
 	function OnlyNum(){
 		this.value = this.value.replace(RegexNum, &apos;&apos;);
 	}
@@ -1815,6 +1898,7 @@ a{
 		}
 	}
 
+	// Function to change the spell stats once the user clicks the change stat button
 	function ChangeSpellStat(){
 	try {
 		let dropButton = this.closest(&apos;.dropdown&apos;).getElementsByTagName(&apos;button&apos;)[0];
@@ -1830,6 +1914,7 @@ a{
 	} catch (err) { console.log(err);}
 	}
 
+	// Toggle the drop down menu when the user clicks the change stat button
 	function ToggleDrop(){
     	let dropdown = document.getElementById(this.getAttribute(&apos;data-dropDiv&apos;));
 
@@ -1845,7 +1930,8 @@ a{
 	const IntSkill = [&quot;Arcana&quot;, &quot;History&quot;, &quot;Investigation&quot;, &quot;Nature&quot;, &quot;Religion&quot;];	
 	const WisSkill = [&quot;Animal Handling&quot;, &quot;Insight&quot;, &quot;Medicine&quot;, &quot;Perception&quot;, &quot;Survival&quot;];
 	const ChaSkill = [&quot;Deception&quot;, &quot;Intimidation&quot;, &quot;Performance&quot;, &quot;Persuasion&quot;];
-	
+
+	// Returns the full skill check name (including the stat) from a skill name
 	function GetCheckFromSkill(skill){
 		if (StrSkill.includes(skill)) return &quot;Strength (&quot;+skill+&quot;)&quot;;
 		if (DexSkill.includes(skill)) return &quot;Dexterity (&quot;+skill+&quot;)&quot;;
@@ -1855,6 +1941,7 @@ a{
 		return &quot;Unknown skill&quot;;
 	}
 
+	// Creates the drop down stat menu
 	function CreateSpellStatDropdown(td, spell){
 			dropText = document.createElement(&apos;span&apos;); dropText.innerHTML = &apos;Spell Ability:&apos;; dropText.className = &apos;label&apos;; td.appendChild(dropText);
 			dropDiv  = document.createElement(&apos;div&apos;);  dropDiv.className = &apos;dropdown&apos;; td.appendChild(dropDiv);
@@ -1880,6 +1967,7 @@ a{
 		    dropDiv.appendChild(dropButton); dropDiv.appendChild(dropContent);
 	}
 
+	// Fills the saving throw form and submit it, triggering the savingThrow MapTool macro
 	function SavingThrowSubmit(spellName, type, target, dc){
 	
 				document.getElementById(&apos;formSavingThrowName&apos;).value = spellName;
@@ -1902,6 +1990,7 @@ a{
 				document.getElementById(&apos;formSavingThrow&apos;).submit();
 	}
 
+	// Fills the check form and submit it, triggering the check MapTool macro
 	function CheckSubmit(spellName, type, target, dc){
 				document.getElementById(&apos;formCheckName&apos;).value = spellName;
 				document.getElementById(&apos;formCheckType&apos;).value = type;
@@ -1923,6 +2012,7 @@ a{
 				document.getElementById(&apos;formCheck&apos;).submit();
 	}
 
+	// Fills the attack form and submit it, triggering the attack MapTool macro
 	function AttackSubmit(spellName, range, type){
 				document.getElementById(&apos;formAttackName&apos;).value = spellName;
 				document.getElementById(&apos;formAttackType&apos;).value = type;
@@ -1941,6 +2031,7 @@ a{
 				document.getElementById(&apos;formAttack&apos;).submit();
 	}
 
+	// Fills the damage form and submit it, triggering the damage MapTool macro
 	function DamageSubmit(spellName, damage, type, save, plus,  levels, scaling){
 				document.getElementById(&apos;formDamageName&apos;   ).value = spellName;
 				document.getElementById(&apos;formDamageDMG&apos;    ).value = damage;				
@@ -1961,7 +2052,7 @@ a{
 				document.getElementById(&apos;formDamage&apos;).submit();
 	}
 
-
+	// Fills the skill form and submit it, triggering the skill MapTool macro
 	function SkillSubmit(spellName, type, target, dc){
 	
 				document.getElementById(&apos;formSkillName&apos;).value = spellName;
@@ -1984,6 +2075,7 @@ a{
 				document.getElementById(&apos;formSkill&apos;).submit();
 	}
 
+	// Creates the spell description from a spell.
     function GetSpellDesc(spell){
     	try{
  			let table = document.createElement(&apos;table&apos;);
@@ -2113,12 +2205,13 @@ a{
     }
 
 
-
+	// Capitalizes the first letter of a string
 	const capitalize = (s) =&gt; {
 		if (typeof s !== &apos;string&apos;) return &apos;&apos;
 		return s.charAt(0).toUpperCase() + s.slice(1)
 	}
 
+	// Capitalizes each word of a string
 	const capitalizeAll = (str) =&gt; {
 		let wordsArray = str.toLowerCase().split(/\s+/);
 		let upperCased = wordsArray.map(function(word) {
@@ -2127,7 +2220,7 @@ a{
   		return upperCased.join(&quot; &quot;);
 	}
 	
-
+	// Gets the string corresponding to the duration of the spell. Can include a macroLink for concentration.
 	function GetDuration(spell){
 		let duration = spell.duration[0];
 
@@ -2152,6 +2245,7 @@ a{
 		return strDuration;
 	}
 
+	// Gets the spell components string
 	function GetComponents(comp){
 			let arrComp = new Array();
             // Components
@@ -2172,6 +2266,7 @@ a{
             return arrComp.join(&apos;, &apos;);
 	}
 
+	// Gets the range string
 	function GetRange(spell){
 			let vType = spell.range.type;
 			if (vType == &apos;special&apos;){
@@ -2185,6 +2280,7 @@ a{
 			}
 	}
 
+	// Recursive function to get all the entries of a spell properly formatted, including tables and such
     function GetEntries(entry, spell){
     	if (entry[&apos;entries&apos;]){
 			let vAllEntries = entry[&apos;entries&apos;]
@@ -2210,6 +2306,7 @@ a{
     	} else if (entry.type == &apos;table&apos;){
     		return GetTableFromEntry(entry, spell);
     	} else {
+    		 // Use regex to build macroLinks / buttons out of keywords
     		
 			 let reg = /{@condition ([a-z0-9]+)(?:[\|]+([a-z]+))?}/g;
 			 entry = entry.replace(reg, (match, condition, text) =&gt; {
@@ -2300,7 +2397,7 @@ a{
 				return vLinkCreature;
 			});
 
-			reg = /{@spell ([a-z0-9-+() ]+)}/g;
+			reg = /{@spell ([A-Za-z0-9-+() ]+)}/g;
 			entry = entry.replace(reg, (match, spellName) =&gt; {
 				let vLinkSpell = linkSpell + encodeURIComponent(spellName);
 				vLinkSpell = `&lt;a href=&apos;` + vLinkSpell + `&apos;&gt;` + capitalizeAll(spellName) +&apos;&lt;/a&gt;&apos;;
@@ -2424,6 +2521,7 @@ a{
     	}
     }
 
+	// Get the school and level string, including the ritual tag
 	function GetSchoolLevel(spell){
 			let text = &apos;&apos;;
 			if(spell.level == 0){
@@ -2437,6 +2535,7 @@ a{
 			return text;
 	}
 
+	// Gets the spell level string out of the numeric spell level
     function GetStringSpellLevel(number){
             if (number == 0){
  			    return &apos;cantrip&apos;;           	
@@ -2451,6 +2550,7 @@ a{
             }
     }
 
+	// Get the school out of the first character
     function GetStringSpellSchool(char){
 		switch (char) {
 			case &apos;I&apos;: return &apos;illusion&apos;;
@@ -2466,7 +2566,7 @@ a{
     }
 
 
-    
+    // Properly formats a table stored as a json.
     function GetTableFromEntry(entry, spell){
     	let strTable = &apos;&lt;table class=smalltable&gt;&apos;;
 
@@ -2680,24 +2780,8 @@ a{
 [h: vDefaultStat = macro.return]
 [h: vDefaultDC = 15]
 
-[h: &quot;First, try the current token.&quot;]
-[h: vCurrentId = currentToken()]
-
-[h: &quot;If current token is library, don&apos;t take it&quot;] 
-[h, if (vCurrentId != &quot;&quot;), CODE:{ [if(getName(vCurrentId) == vLib): vCurrentId = &quot;&quot;]};{}]
-
-[h: &quot;If no valid token, take the impersonated.&quot;]
-[h, if (vCurrentId == &quot;&quot;), CODE:{ [vCurrentId = getImpersonated()]};{}]
-
-[h: &quot;If impersonated token is library, don&apos;t take it&quot;] 
-[h, if (vCurrentId != &quot;&quot;), CODE:{ [if(getName(vCurrentId) == vLib): vCurrentId = &quot;&quot;]};{}]
-
-[h: &quot;If still no valid token, take first in selection.&quot;]
-[h, if (vCurrentId == &quot;&quot;), CODE:{ [vCurrentId = listGet(getSelected(),0)]};{}]
-
-[h: &quot;If first token is library, don&apos;t take it&quot;] 
-[h, if (vCurrentId != &quot;&quot;), CODE:{ [if(getName(vCurrentId) == vLib): vCurrentId = &quot;&quot;]};{}]
-
+[macro(&quot;getCasterToken@Lib:SpellLibrary&quot;):&quot;&quot;]
+[h: vCurrentId = macro.return]
 
 [h: &quot;If valid token, take known spell list&quot;]
 [h, if(vCurrentId != &quot;&quot;), CODE:{
