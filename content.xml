@@ -56,7 +56,21 @@
   <isFlippedY>false</isFlippedY>
   <sightType>Normal</sightType>
   <hasSight>false</hasSight>
-  <gmNotes>Update 1.3 (5/10/2020)
+  <notes>Instructions:
+
+1) Put the spell Lib:SpellLibrary token on a map, and drag the &quot;Spell Library&quot; and &quot;Spellbook&quot; macros to the Campaign Panel
+2) Impersonate the token you wish to use to cast spells
+3) Click on &quot;Spell Library&quot;, browse spells, and add them via the &quot;Learn&quot; button on the right of each spell
+4) Click on &quot;Spellbook&quot; macro, and check your spells. You can prepare them by clicking the dot on the left.
+5) To cast, click on the &quot;+&quot; sign on the left of the spell to read the spell description. Select the tokens that will be affected, and click on the keyword to trigger the effect (saving throw, skill check, etc)</notes>
+  <gmNotes>Update 1.4 (5/15/2020)
+
+- New feature: damage prompts to the GM! GMs will now receive a prompt in the chat when a damage link is clicked on a spell while targets are selected. The GM can change how much damage each target should receive, and press the DMG button to confirm. All targets will take the damage automatically. Feature can be disabled in Config, and requires MapTool 1.7 to work.
+- Corrected a few spells having duplicated condition links
+- Fix MapTool hanging when using the token editor with the Spell Library
+- New link &quot;Macro&quot; under &quot;Share&quot; to create a shortcut macro to a spell on a token. The shortcut&apos;s color represents the school of the spell.
+
+Update 1.3 (5/10/2020)
 
 - Add Artificer to the list of class filters
 - Fix spell material component not being displayed
@@ -94,10 +108,18 @@ Update 1.1 (5/4/2020)
         </net.rptools.CaseInsensitiveHashMap_-KeyValue>
       </entry>
       <entry>
+        <string>damagelinkoption</string>
+        <net.rptools.CaseInsensitiveHashMap_-KeyValue>
+          <key>DamageLinkOption</key>
+          <value class="string">For all (GM)</value>
+          <outer-class reference="../../../.."/>
+        </net.rptools.CaseInsensitiveHashMap_-KeyValue>
+      </entry>
+      <entry>
         <string>customspells</string>
         <net.rptools.CaseInsensitiveHashMap_-KeyValue>
           <key>CustomSpells</key>
-          <value class="string">[{&quot;classes&quot;:{&quot;fromClassList&quot;:[{&quot;name&quot;:&quot;Bard&quot;},{&quot;name&quot;:&quot;Cleric&quot;},{&quot;name&quot;:&quot;Druid&quot;},{&quot;name&quot;:&quot;Wizard&quot;}]},&quot;name&quot;:&quot;Origami&quot;,&quot;source&quot;:&quot;DNDBeyond&quot;,&quot;page&quot;:&quot;&quot;,&quot;level&quot;:0,&quot;school&quot;:&quot;T&quot;,&quot;time&quot;:[{&quot;number&quot;:1,&quot;unit&quot;:&quot;action&quot;,&quot;inMinutes&quot;:0.1}],&quot;range&quot;:{&quot;type&quot;:&quot;point&quot;,&quot;inFeet&quot;:5,&quot;distance&quot;:{&quot;type&quot;:&quot;feet&quot;,&quot;amount&quot;:5}},&quot;components&quot;:{&quot;v&quot;:&quot;true&quot;,&quot;s&quot;:&quot;true&quot;},&quot;duration&quot;:[{&quot;type&quot;:&quot;timed&quot;,&quot;inMinutes&quot;:60,&quot;duration&quot;:{&quot;type&quot;:&quot;hour&quot;,&quot;amount&quot;:1},&quot;concentration&quot;:&quot;true&quot;}],&quot;meta&quot;:{},&quot;entries&quot;:[&quot;You magically fold and animate a Tiny piece of paper or similiar material, such as a leaf, within range. You can fold it into one of the following shapes:\n&lt;br&gt;&lt;br&gt;\n&lt;b&gt;Boat&lt;/b&gt;. The boat floats on and is not destroyed by water. When placed in water, you can mentally direct the boat to move in any direction along the water&apos;s surface, at a speed of 5 feet per round. The boat is able to carry a single Tiny object that weighs 1 pound or less.\n&lt;br&gt;&lt;br&gt;\n&lt;b&gt;Crane&lt;/b&gt;. The crane has a fly speed of 10 feet. You can mentally direct the crane to move, or name a location within 1 mile that you know of. The crane will fly to the location and land, becoming inert.\n&lt;br&gt;&lt;br&gt;\n&lt;b&gt;Dog&lt;/b&gt;. The dog has a movement speed of 10 feet. You can mentally direct the dog to move. If a creature hostile to you moves to within 10 feet of the dog, the dog moves up to its speed towards it and gives off a loud barking noise. Afterwards, the dog unfolds itself and becomes inert.\n&lt;br&gt;&lt;br&gt;\n&lt;b&gt;Flower&lt;/b&gt;. The flower is controlled by the time of day. It is open during the day and closed during the night. During sunrise and sunset, the flower slowly opens and closes respectively.\n&lt;br&gt;&lt;br&gt;\n&lt;b&gt;Samurai&lt;/b&gt;. The samurai has a movement speed of 5 feet. You can mentally direct the samurai to move. The samurai always points his sword in the direction of the nearest castle or fort.\n&lt;br&gt;&lt;br&gt;\nYou can have up to 5 pieces of origami active at once.&quot;],&quot;custom&quot;:&quot;true&quot;}]</value>
+          <value class="string">[{&quot;name&quot;:&quot;Origami&quot;,&quot;classes&quot;:{&quot;fromClassList&quot;:[{&quot;name&quot;:&quot;Bard&quot;},{&quot;name&quot;:&quot;Cleric&quot;},{&quot;name&quot;:&quot;Druid&quot;},{&quot;name&quot;:&quot;Wizard&quot;}]},&quot;source&quot;:&quot;DNDBeyond&quot;,&quot;page&quot;:&quot;&quot;,&quot;level&quot;:0,&quot;school&quot;:&quot;T&quot;,&quot;time&quot;:[{&quot;number&quot;:1,&quot;unit&quot;:&quot;action&quot;,&quot;inMinutes&quot;:0.1}],&quot;range&quot;:{&quot;type&quot;:&quot;point&quot;,&quot;inFeet&quot;:5,&quot;distance&quot;:{&quot;type&quot;:&quot;feet&quot;,&quot;amount&quot;:5}},&quot;components&quot;:{&quot;v&quot;:&quot;true&quot;,&quot;s&quot;:&quot;true&quot;},&quot;duration&quot;:[{&quot;type&quot;:&quot;timed&quot;,&quot;inMinutes&quot;:60,&quot;duration&quot;:{&quot;type&quot;:&quot;hour&quot;,&quot;amount&quot;:1},&quot;concentration&quot;:&quot;true&quot;}],&quot;meta&quot;:{},&quot;entries&quot;:[&quot;You magically fold and animate a Tiny piece of paper or similiar material, such as a leaf, within range. You can fold it into one of the following shapes:\n&lt;br&gt;&lt;br&gt;\n&lt;b&gt;Boat&lt;/b&gt;. The boat floats on and is not destroyed by water. When placed in water, you can mentally direct the boat to move in any direction along the water&apos;s surface, at a speed of 5 feet per round. The boat is able to carry a single Tiny object that weighs 1 pound or less.\n&lt;br&gt;&lt;br&gt;\n&lt;b&gt;Crane&lt;/b&gt;. The crane has a fly speed of 10 feet. You can mentally direct the crane to move, or name a location within 1 mile that you know of. The crane will fly to the location and land, becoming inert.\n&lt;br&gt;&lt;br&gt;\n&lt;b&gt;Dog&lt;/b&gt;. The dog has a movement speed of 10 feet. You can mentally direct the dog to move. If a creature hostile to you moves to within 10 feet of the dog, the dog moves up to its speed towards it and gives off a loud barking noise. Afterwards, the dog unfolds itself and becomes inert.\n&lt;br&gt;&lt;br&gt;\n&lt;b&gt;Flower&lt;/b&gt;. The flower is controlled by the time of day. It is open during the day and closed during the night. During sunrise and sunset, the flower slowly opens and closes respectively.\n&lt;br&gt;&lt;br&gt;\n&lt;b&gt;Samurai&lt;/b&gt;. The samurai has a movement speed of 5 feet. You can mentally direct the samurai to move. The samurai always points his sword in the direction of the nearest castle or fort.\n&lt;br&gt;&lt;br&gt;\nYou can have up to 5 pieces of origami active at once.&quot;],&quot;custom&quot;:&quot;true&quot;}]</value>
           <outer-class reference="../../../.."/>
         </net.rptools.CaseInsensitiveHashMap_-KeyValue>
       </entry>
@@ -105,7 +127,7 @@ Update 1.1 (5/4/2020)
         <string>libversion</string>
         <net.rptools.CaseInsensitiveHashMap_-KeyValue>
           <key>libversion</key>
-          <value class="string">1.3</value>
+          <value class="string">1.4</value>
           <outer-class reference="../../../.."/>
         </net.rptools.CaseInsensitiveHashMap_-KeyValue>
       </entry>
@@ -701,6 +723,7 @@ Update 1.1 (5/4/2020)
 	var linkSpell = &quot;[r: macroLinkText(&apos;Show a Spell@Lib:SpellLibrary&apos;, &apos;none&apos;, &apos;&apos;, vCurrentId)]&quot;;
 	var linkConcentration = &quot;[r: macroLinkText(&apos;concentration@Lib:SpellLibrary&apos;, &apos;all&apos;, &apos;&apos;, vCurrentId)]&quot;;
 	var linkShare = &quot;[r: macroLinkText(&apos;share@Lib:SpellLibrary&apos;, &apos;all&apos;, &apos;&apos;, vCurrentId)]&quot;;
+	var linkMacro = &quot;[r: macroLinkText(&apos;createMacro@Lib:SpellLibrary&apos;, &apos;self&apos;, &apos;&apos;, vCurrentId)]&quot;;
 
 	const QuoteSymbol = unescape(&quot;%27&quot;);
 &lt;/script&gt;
@@ -860,6 +883,11 @@ body {
 
 .share {
 	text-align: right;
+}
+
+.macro {
+	text-align: right;
+	font-size: 0.7em;
 }
 
 .page {
@@ -1061,6 +1089,8 @@ a{
 	[vLevel = 0]
 }]
 
+
+[h: &apos;Show the damage&apos;]
 [r: vSpellLink] [r:vVerb] [t: vRoll = eval(string(vDamage))] ([r: vDamage])
 
 [if(vLevel &gt; 0), CODE:{ 
@@ -1072,6 +1102,7 @@ a{
 	  [h: vExtraDamage = 0]	
 }]
 
+[h: &apos;Get the extra damage, if any&apos;]
 [if (vPlusMod == 1), CODE:{
 	[h: vCasterId      = json.get(macro.args, &quot;casterId&quot;)]
 	[h: vCastStat      = substring(json.get(macro.args, &apos;stat&apos;), 0, 3)]
@@ -1084,6 +1115,23 @@ a{
 		= &lt;b&gt;[r: vTotal = vRoll + vExtraDamage]&lt;/b&gt;
 	}]
 }]
+
+[h: &apos;Get targets&apos; ]
+[h: vSelected = getSelected()]
+[h: vDamageLinkOption =  getLibProperty(&quot;DamageLinkOption&quot;)]
+[h: vAll = if(vDamageLinkOption == &quot;For all (GM)&quot;, 1, 0)]
+[h: vNever = if(vDamageLinkOption == &quot;Never&quot;, 1, 0)]
+
+[h: vPrompts = &quot;&quot;]
+[h: vNames = &quot;&quot;]
+[h, foreach(vId, vSelected), CODE:{
+	[vPrompts = if(!vNever &amp;&amp; (isNPC(vId) || vAll) &amp;&amp; isNumber(getProperty(&quot;HP&quot;, vId)), listAppend(vPrompts, vId), vPrompts)]
+	[vNames = listAppend(vNames, replace(getName(vId), &quot;&apos;&quot;, &quot;`&quot;))]
+}]
+
+[h: vQuantity = &quot;&lt;span title=&apos;Affected: &quot; + vNames + &quot;&apos;&gt;&quot; + vQuantity + &quot;&lt;/span&gt;&quot;]
+
+
 [r: vQuantity][r, if(vHeal == 0): &quot; (half: &quot; + floor(vTotal/2) + if(vIsAttack == 0, &quot;).&quot;, &quot;&quot;); &quot;.&quot;]
 
 [h: &quot;If attack, display the damage for a critical hit.&quot;]
@@ -1093,7 +1141,38 @@ a{
 		+ [t: vExtraDamage = eval(vExtra)] ([r: vTextExtra])
 	};{}]
 	= [r: vTotalCrit = vTotal + vRoll + vExtraDamage], crit half: [r: floor(vTotalCrit/2)]).
-};{}]</command>
+};{}]
+
+
+
+[h, if(listCount(vPrompts) &gt; 0), CODE:{
+	[processorLink = macroLinkText(&quot;damageTargets@Lib:SpellLibrary&quot;, &quot;none&quot;)]
+	[vButton = if(vHeal, &quot;HEAL &quot;, &quot;DMG &quot;) + vTotal]
+	[outputGM = &apos;
+		&lt;br&gt;
+		&lt;form action=&quot;%{processorLink}&quot; method=&quot;json&quot;&gt;
+		&lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;%{vButton}&quot;&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;damage&quot; value=%{vTotal}&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;isHeal&quot; value=%{vHeal}&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;spellName&quot; value=&quot;%{vSpellName}&quot;&gt;
+		&lt;input type=&quot;hidden&quot; name=&quot;casterName&quot; value = &quot;%{vCasterName}&quot;&gt;
+	&apos;]
+
+	[if(vIsAttack == 1): outputGM = outputGM + &apos;
+		&lt;input type=&quot;hidden&quot;  name=&quot;critDamage&quot; value=%{vTotalCrit}&gt; 
+		crit&lt;input type=&quot;checkbox&quot; name=&quot;critical&quot; value=&quot;critical&quot;&gt;
+	&apos;]
+
+	[vLast = listCount(vPrompts) - 1]
+	[vDrops = &quot;&quot;]
+	[foreach(vId, vPrompts), CODE:{
+		[vDrops = vDrops + getName(vId) + &quot;: &lt;select name=ID-&quot; + vId + &quot;&gt;&lt;option&gt;Full&lt;/option&gt;&lt;option&gt;1/2&lt;/option&gt;&lt;option&gt;0&lt;/option&gt;&lt;option&gt;1/4&lt;/option&gt;&lt;option&gt;2&lt;/option&gt;&lt;/select&gt;&quot;]
+		[if (roll.count != vLast): vDrops = vDrops + &quot;, &quot;]
+	}]
+	[outputGM = outputGM + vDrops + &quot;&lt;/form&gt;&quot;]
+};{}]
+
+[gm, r: strformat(outputGM)]</command>
         <label>damage</label>
         <group>2. Effects</group>
         <sortby></sortby>
@@ -1821,8 +1900,7 @@ a{
 			td.className = &apos;schoolLevel&apos;;
 
 			// Share button
-			td = tr.insertCell(-1);   td.colSpan = 1;td.textContent = &apos;Share&apos;;
-			td.className = &apos;share&apos;;
+			td = tr.insertCell(-1);   td.colSpan = 1; td.className = &apos;share&apos;;
 
 			let vLinkShare = linkShare + encodeURIComponent(spell.name);
 			td.innerHTML = `&lt;a href=&apos;` + vLinkShare + `&apos;&gt;Share&lt;/a&gt;`;
@@ -1837,9 +1915,20 @@ a{
 			if (vTime.condition){
 				strTime += &quot;, &quot; + GetEntries(vTime.condition, spell);
 			}
-			td = document.createElement(&apos;td&apos;); td.colSpan = 2; td.innerHTML = strTime; tr.append(td);
+			td = document.createElement(&apos;td&apos;); td.colSpan = 1; td.innerHTML = strTime; tr.append(td);
 			span = document.createElement(&apos;span&apos;); span.textContent = &apos;Casting Time: &apos;; span.className = &apos;label&apos;; td.insertBefore(span, td.childNodes[0]);
 
+			// Create macro shortcut
+			td = tr.insertCell(-1);   td.colSpan = 1; td.className = &apos;macro&apos;;
+
+			if (vIsToken){
+				let json = {&apos;spell&apos; : spell.name, &apos;casterName&apos;: vCasterName, &apos;casterId&apos;:vCasterId, &apos;level&apos;:spell.level, &apos;school&apos;:spell.school };
+
+				let vLinkMacro = linkMacro + encodeURIComponent(JSON.stringify(json));	
+				td.innerHTML = `&lt;a href=&apos;` + vLinkMacro + `&apos;&gt;Macro&lt;/a&gt;`;
+			}
+
+			// Range
 			tr = table.insertRow(-1);
 			let strRange = capitalize(GetRange(spell));
 			td = document.createElement(&apos;td&apos;); td.colSpan = 2; td.textContent = strRange; tr.append(td);  
@@ -2283,14 +2372,14 @@ a{
 	// Get the school out of the first character
     function GetStringSpellSchool(char){
 		switch (char) {
-			case &apos;I&apos;: return &apos;illusion&apos;;
+			case &apos;A&apos;: return &apos;abjuration&apos;;
+			case &apos;C&apos;: return &apos;conjuration&apos;;	
+			case &apos;D&apos;: return &apos;divination&apos;;	
 			case &apos;E&apos;: return &apos;enchantment&apos;;
 			case &apos;V&apos;: return &apos;evocation&apos;;
-			case &apos;T&apos;: return &apos;transmutation&apos;;
-			case &apos;D&apos;: return &apos;divination&apos;;
+			case &apos;I&apos;: return &apos;illusion&apos;;
 			case &apos;N&apos;: return &apos;necromancy&apos;;
-			case &apos;A&apos;: return &apos;abjuration&apos;;
-			case &apos;C&apos;: return &apos;conjuration&apos;;
+			case &apos;T&apos;: return &apos;transmutation&apos;;
 			default: return &apos;None&apos;;
 		}
     }
@@ -2563,6 +2652,7 @@ a{
 	var linkSpell = &quot;[r: macroLinkText(&apos;Show a Spell@Lib:SpellLibrary&apos;, &apos;none&apos;, &apos;&apos;, vCurrentId)]&quot;;
 	var linkConcentration = &quot;[r: macroLinkText(&apos;concentration@Lib:SpellLibrary&apos;, &apos;all&apos;, &apos;&apos;, vCurrentId)]&quot;;
 	var linkShare = &quot;[r: macroLinkText(&apos;share@Lib:SpellLibrary&apos;, &apos;all&apos;, &apos;&apos;, vCurrentId)]&quot;;
+	var linkMacro = &quot;[r: macroLinkText(&apos;createMacro@Lib:SpellLibrary&apos;, &apos;self&apos;, &apos;&apos;, vCurrentId)]&quot;;
 
 	const QuoteSymbol = unescape(&quot;%27&quot;);
 &lt;/script&gt;
@@ -2810,13 +2900,24 @@ The spell will be casted on those who are selected at the time of the casting.</
 [h: &quot;Option as to when add a spellbook macro to the character.&quot;]
 [h: vBookMacroOptions = &quot;Never,On Learning First Spell,On Learning Any Spell&quot;]
 
-[h: vPreviousOption   = getLibProperty(&quot;BookMacroOption&quot;)]
-[h: vPreviousOption   = listFind(vBookMacroOptions, vPreviousOption)]
-[h, if(vPreviousOption == -1): vPreviousOption = 1]
+[h: vBookMacroOption   = getLibProperty(&quot;BookMacroOption&quot;)]
+[h: vBookMacroIndex    = listFind(vBookMacroOptions, vBookMacroOption)]
+[h, if(vBookMacroIndex == -1):  vBookMacroIndex = 1]
 
-[h: resp = input(&quot;vBookMacroOption|&quot;+vBookMacroOptions+&quot;|Create Spellbook macro on token|LIST|VALUE=STRING SELECT=&quot;+vPreviousOption+&quot; DELIMITER=,&quot;)][h: abort(resp)]
+[h: &quot;Option to provide damage links to the GM.&quot;]
+[h: vDamageLinkOptions = &quot;Never,For NPCs (GM),For all (GM)&quot;]
 
-[h: setLibProperty(&quot;BookMacroOption&quot;, vBookMacroOption)]</command>
+[h: vDamageLinkOption  = getLibProperty(&quot;DamageLinkOption&quot;)]
+[h: vDamageLinkIndex   = listFind(vDamageLinkOptions, vDamageLinkOption)]
+[h, if(vDamageLinkIndex == -1): vDamageLinkIndex = 1]
+
+[h: resp = input(
+	&quot;vBookMacroOption|&quot;+vBookMacroOptions+&quot;|Create Spellbook macro to tokens|LIST|VALUE=STRING SELECT=&quot;+vBookMacroIndex+&quot; DELIMITER=,&quot;,
+	&quot;vDamageLinkOption|&quot;+vDamageLinkOptions+&quot;|Gives damage prompts in the chat|LIST|VALUE=STRING SELECT=&quot;+vDamageLinkIndex+&quot; DELIMITER=,&quot;
+)][h: abort(resp)]
+
+[h: setLibProperty(&quot;BookMacroOption&quot;, vBookMacroOption)]
+[h: setLibProperty(&quot;DamageLinkOption&quot;, vDamageLinkOption)]</command>
         <label>Configurate</label>
         <group>1. Clickable</group>
         <sortby></sortby>
@@ -3456,8 +3557,9 @@ The spell will be casted on those who are selected at the time of the casting.</
         <index>40</index>
         <colorKey>default</colorKey>
         <hotKey>None</hotKey>
-        <command>[h: vSpell  = &quot;{}&quot;]
-[h: vName   = replace(json.get(macro.args, &quot;name&quot;), &quot;&apos;&quot;, &quot;`&quot;)]
+        <command>[h: vName   = replace(json.get(macro.args, &quot;name&quot;), &quot;&apos;&quot;, &quot;`&quot;)]
+[h: vSpell  = json.set(&quot;{}&quot;, &quot;name&quot;, vName)]
+
 [h: vSource = json.get(macro.args, &quot;source&quot;)]
 [h: vPage   = json.get(macro.args, &quot;page&quot;)]
 [h: vLevel  = json.get(macro.args, &quot;level&quot;)]
@@ -3554,7 +3656,7 @@ default: {}
 
 [h: &quot;ADD THE NEW SPELL&quot;]
 
-[h: vSpell = json.set(vSpell, &quot;name&quot;, vName, &quot;source&quot;, vSource, &quot;page&quot;, vPage, &quot;level&quot;, vLevel, &quot;school&quot;, vSchool, &quot;time&quot;, vTime, &quot;range&quot;, vRange, &quot;components&quot;, vComponents, &quot;duration&quot;, vDuration, &quot;meta&quot;, vMeta, &quot;entries&quot;, vEntries, &quot;custom&quot;, &quot;true&quot;)]
+[h: vSpell = json.set(vSpell, &quot;source&quot;, vSource, &quot;page&quot;, vPage, &quot;level&quot;, vLevel, &quot;school&quot;, vSchool, &quot;time&quot;, vTime, &quot;range&quot;, vRange, &quot;components&quot;, vComponents, &quot;duration&quot;, vDuration, &quot;meta&quot;, vMeta, &quot;entries&quot;, vEntries, &quot;custom&quot;, &quot;true&quot;)]
 
 [h: vCustomSpells = getLibProperty(&quot;CustomSpells&quot;)]
 
@@ -3903,6 +4005,270 @@ default: {}
         <maxWidth></maxWidth>
         <allowPlayerEdits>false</allowPlayerEdits>
         <toolTip>Modify a custom spell in the library.</toolTip>
+        <displayHotKey>true</displayHotKey>
+        <commonMacro>false</commonMacro>
+        <compareGroup>true</compareGroup>
+        <compareSortPrefix>true</compareSortPrefix>
+        <compareCommand>true</compareCommand>
+        <compareIncludeLabel>true</compareIncludeLabel>
+        <compareAutoExecute>true</compareAutoExecute>
+        <compareApplyToSelectedTokens>true</compareApplyToSelectedTokens>
+      </net.rptools.maptool.model.MacroButtonProperties>
+    </entry>
+    <entry>
+      <int>44</int>
+      <net.rptools.maptool.model.MacroButtonProperties>
+        <macroUUID>bc3a97f0-547d-4908-ba30-1bfa5bb9dca7</macroUUID>
+        <saveLocation>Token</saveLocation>
+        <index>44</index>
+        <colorKey>default</colorKey>
+        <hotKey>None</hotKey>
+        <command>[h: vIsHeal = json.get(macro.args, &quot;isHeal&quot;)]
+[h: vIsCrit = if( json.get(macro.args, &quot;critical&quot;) == &quot;&quot;, 0, 1) ]
+[h: vDamage = if(vIsCrit, json.get(macro.args, &quot;critDamage&quot;), json.get(macro.args, &quot;damage&quot;))]
+[h: vMacro  = if(vIsHeal, &quot;healDamage@Lib:SpellLibrary&quot;, &quot;takeDamage@Lib:SpellLibrary&quot;)]
+[h: vSpellName = json.get(macro.args, &quot;spellName&quot;)]
+[h: vCasterName = json.get(macro.args, &quot;casterName&quot;)]
+[h: vTargetJson = json.set(&quot;{}&quot;, &quot;spellName&quot;, vSpellName, &quot;casterName&quot;, vCasterName, &quot;isCrit&quot;, vIsCrit)]
+
+[h: vFields    = json.fields(macro.args)]
+[h: vTargets = &quot;{}&quot;]
+[h, foreach(vField,vFields), CODE:{
+	[if (startsWith(vField, &quot;ID-&quot;) == 1) : vTargets = json.set(vTargets, substring(vField, 3), json.get(macro.args, vField))]
+}]
+
+[h, foreach(vId, vTargets), CODE:{
+	[vTextMult = json.get(vTargets, vId)]
+	[vMult = vTextMult][h, if(vMult == &quot;Full&quot;): vMult = 1]
+	[if(!isNumber(vMult)): vMult = eval(vMult)]
+	[vTargetDamage = floor(vMult*vDamage)]
+	[vLink = macroLinkText(vMacro, &quot;none&quot;, json.set(vTargetJson, &quot;amount&quot;, vTargetDamage, &quot;fraction&quot;, vTextMult), vId)]
+	[execLink(vLink, 0)]
+}]</command>
+        <label>damageTargets</label>
+        <group>8. Damage</group>
+        <sortby></sortby>
+        <autoExecute>true</autoExecute>
+        <includeLabel>false</includeLabel>
+        <applyToTokens>false</applyToTokens>
+        <fontColorKey>black</fontColorKey>
+        <fontSize>1.00em</fontSize>
+        <minWidth></minWidth>
+        <maxWidth></maxWidth>
+        <allowPlayerEdits>false</allowPlayerEdits>
+        <toolTip></toolTip>
+        <displayHotKey>true</displayHotKey>
+        <commonMacro>false</commonMacro>
+        <compareGroup>true</compareGroup>
+        <compareSortPrefix>true</compareSortPrefix>
+        <compareCommand>true</compareCommand>
+        <compareIncludeLabel>true</compareIncludeLabel>
+        <compareAutoExecute>true</compareAutoExecute>
+        <compareApplyToSelectedTokens>true</compareApplyToSelectedTokens>
+      </net.rptools.maptool.model.MacroButtonProperties>
+    </entry>
+    <entry>
+      <int>45</int>
+      <net.rptools.maptool.model.MacroButtonProperties>
+        <macroUUID>9116510b-2c64-46de-b7a6-cbf300547dac</macroUUID>
+        <saveLocation>Token</saveLocation>
+        <index>45</index>
+        <colorKey>default</colorKey>
+        <hotKey>None</hotKey>
+        <command>[h: assert(currentToken() != &quot;&quot;, &quot;Unknown token; cannot take damage.&quot;)]
+
+[h: vDamage = json.get(macro.args, &quot;amount&quot;)]
+[h: vSpellName = json.get(macro.args, &quot;spellName&quot;)]
+[h: vCasterName = json.get(macro.args, &quot;casterName&quot;)]
+[h: vFraction = lower(json.get(macro.args, &quot;fraction&quot;))]
+[h: vIsCrit = json.get(macro.args, &quot;isCrit&quot;)]
+
+[h, if(TempHP == &quot;&quot;): TempHP = 0]
+[h: vWhoGetsFull = if(isNPC(),     &quot;gm&quot;, &quot;all&quot;)]
+[h: vWhoGetsPart = if(isNPC(), &quot;not-gm&quot;, &quot;none&quot;)]
+
+[h: &apos;&lt;!-- Instant Death Check. Sends an alert to the GM only only in case they want to rule differently. --&gt;&apos;]
+[h, if(isPC() &amp;&amp; vDamage &gt; eMaxHP + eHP): vGMMsg = &quot;&lt;em style=&apos;color:red&apos;&gt;&lt;strong&gt;GM ALERT:&lt;/strong&gt; &quot; + token.name + &quot; has instantly died from &quot; + vDamage + &quot; damage, which puts them at &quot;+ (eHP - vDamage) + &quot;/&quot; + eMaxHP + &quot;.&lt;/em&gt;&quot;; vGMMsg = &quot;&quot;]
+
+[h: &apos;&lt;!-- Damage reduction logic. --&gt;&apos;]
+[h: vOldHP = HP]]
+[h, if(TempHP == &quot;&quot;): TempHP = 0]
+[h: TempHP = TempHP - vDamage]
+[h, if(TempHP &lt; 0): HP = HP + TempHP]
+[h, if(TempHP &lt; 0): TempHP = 0]
+[h, if(HP &lt; 0): HP = 0]
+
+[h: &apos;&lt;!-- Damage Message. --&gt;&apos;]
+[h: vTooltip = vSpellName + if(vCasterName != &quot;&quot;, &quot; casted by &quot; + vCasterName, &quot;&quot;) + &quot; caused &quot; + vFraction + &quot; damage&quot; + if(vIsCrit == 1, &quot; (critical hit)&quot;, &quot;&quot;) + &quot;.&quot;]
+
+[h: vPartMsg = &quot;&lt;span style=&apos;color:green;&apos;&gt;&quot; + token.name + &quot; has taken &lt;span title=&apos;&quot;+ vTooltip +&quot;&apos;&gt;&quot; + vDamage + &quot; damage&lt;/span&gt;&quot;)]
+[h: vFullMsg = vPartMsg + &quot;, &quot; + vOldHP + &quot;/&quot; +  MaxHP + &quot; -&gt; &lt;b&gt;&quot; + HP + &quot;&lt;/b&gt;/&quot; + MaxHP]
+
+[h: &apos;&lt;!-- Stable Message. --&gt;&apos;]
+[h, if(state.Stable == 1), code: {
+	[state.Stable = 0]
+	[vMsg = &quot; and is no longer stable.&lt;/span&gt;&quot;]
+};{
+	[vMsg =  &quot;.&lt;/span&gt;&quot;]
+}]
+
+[h: vPartMsg =  vPartMsg + vMsg][h: vFullMsg =  vFullMsg + vMsg]
+
+[h: &apos;&lt;!-- Zero HP Message. --&gt;&apos;]
+[h: vMsg = &quot;* &quot;]
+[h, if(HP == 0 &amp;&amp; isNPC()), CODE:{
+	[vMsg     = &quot;* &lt;i style=&apos;color:red&apos;&gt;&quot; + token.name + &quot; has been reduced to 0 HP!&lt;/i&gt; &quot;]
+};{}]
+[h, if(HP == 0 &amp;&amp; isPC()), CODE:{
+	[vMsg     = &quot;* &lt;span style=&apos;font-weight: bold; color:red&apos;&gt;&quot; + token.name +&quot; has been reduced to 0 HP and is Dying!&lt;/strong&gt;&lt;/span&gt; &quot;]
+};{}]
+
+[h: vPartMsg =  vMsg + vPartMsg][h: vFullMsg =  vMsg + vFullMsg]
+
+[h: &apos;&lt;-- Broadcast the messages.--&gt;&apos;]
+[h, if(vGMMsg != &quot;&quot;): broadcast(vGMMsg, &quot;gm&quot;)]
+
+[h: broadcast(vFullMsg, vWhoGetsFull)]
+[h: broadcast(vPartMsg, vWhoGetsPart)]
+
+
+[h: &apos;&lt;!-- Perform approximate bar logic. --&gt;&apos;]
+[h, if(!isBarVisible(&quot;Health&quot;) &amp;&amp; eHP &lt; eMaxHP): setBar(&quot;Health (Approximate)&quot;, eHP / eMaxHP); setBarVisible(&quot;Health (Approximate)&quot;, 0)]
+[h, if( isBarVisible(&quot;Health&quot;) &amp;&amp; HP &lt; eMaxHP): setBar(&quot;Health&quot;, eHP / eMaxHP); setBarVisible(&quot;Health&quot;, 0)]</command>
+        <label>takeDamage</label>
+        <group>8. Damage</group>
+        <sortby></sortby>
+        <autoExecute>true</autoExecute>
+        <includeLabel>false</includeLabel>
+        <applyToTokens>false</applyToTokens>
+        <fontColorKey>black</fontColorKey>
+        <fontSize>1.00em</fontSize>
+        <minWidth></minWidth>
+        <maxWidth></maxWidth>
+        <allowPlayerEdits>false</allowPlayerEdits>
+        <toolTip></toolTip>
+        <displayHotKey>true</displayHotKey>
+        <commonMacro>false</commonMacro>
+        <compareGroup>true</compareGroup>
+        <compareSortPrefix>true</compareSortPrefix>
+        <compareCommand>true</compareCommand>
+        <compareIncludeLabel>true</compareIncludeLabel>
+        <compareAutoExecute>true</compareAutoExecute>
+        <compareApplyToSelectedTokens>true</compareApplyToSelectedTokens>
+      </net.rptools.maptool.model.MacroButtonProperties>
+    </entry>
+    <entry>
+      <int>46</int>
+      <net.rptools.maptool.model.MacroButtonProperties>
+        <macroUUID>f440a866-1b10-4981-b4e5-ab3bb5ac014e</macroUUID>
+        <saveLocation>Token</saveLocation>
+        <index>46</index>
+        <colorKey>default</colorKey>
+        <hotKey>None</hotKey>
+        <command>[h: assert(currentToken() != &quot;&quot;, &quot;Unknown token; cannot heal damage.&quot;)]
+
+[h: vHealing = json.get(macro.args, &quot;amount&quot;)]
+[h: vSpellName = json.get(macro.args, &quot;spellName&quot;)]
+[h: vCasterName = json.get(macro.args, &quot;casterName&quot;)]
+
+[h, if(vHealing &lt; 0): vHealing = 0]
+[h, if(vHealing + HP &gt; MaxHP): vHealing = MaxHP - HP]
+
+[h, if(TempHP == &quot;&quot;): TempHP = 0]
+[h: vWhoGetsFull = if(isNPC(),     &quot;gm&quot;, &quot;all&quot;)]
+[h: vWhoGetsPart = if(isNPC(), &quot;not-gm&quot;, &quot;none&quot;)]
+ 
+[h: vOldHP = HP]
+[h: HP = HP + vHealing]
+
+[h: &apos;&lt;!-- Clear death-related states --&gt;&apos;]
+[h: DeathFails = &quot;&quot;]
+[h: DeathSuccesses = &quot;&quot;]
+[h: state.Dead = 0]
+[h: state.Dying = 0]
+[h: state.Stable = 0]
+
+[h: &apos;&lt;!-- Heal message --&gt;&apos;]
+[h: vTooltip = &quot;Healed by &quot; + vSpellName + if(vCasterName != &quot;&quot;, &quot; casted by &quot; + vCasterName, &quot;&quot;) + &quot;.&quot;]
+
+[h: vPartMsg = &quot;&lt;span style=&apos;color:blue;&apos;&gt;&quot; + token.name + &quot; healed &lt;span title=&apos;&quot; + vTooltip + &quot;&apos;&gt;&quot; + vHealing + &quot; hit points&lt;/span&gt;&lt;/span&gt;&quot;)]
+[h: vFullMsg = vPartMsg + &quot;, &quot; + vOldHP + &quot;/&quot; +  MaxHP + &quot; -&gt; &lt;b&gt;&quot; + HP + &quot;&lt;/b&gt;/&quot; + MaxHP]
+
+[h: &apos;&lt;-- Broadcast the messages.--&gt;&apos;]
+[h: broadcast(vFullMsg, vWhoGetsFull)]
+[h: broadcast(vPartMsg, vWhoGetsPart)]
+
+[h: &apos;&lt;!-- Perform approximate bar logic. --&gt;&apos;]
+[h, if(!isBarVisible(&quot;Health&quot;) &amp;&amp; eHP &lt; eMaxHP): setBar(&quot;Health (Approximate)&quot;, eHP / eMaxHP); setBarVisible(&quot;Health (Approximate)&quot;, 0)]
+[h, if(isBarVisible(&quot;Health&quot;) &amp;&amp; HP &lt; eMaxHP): setBar(&quot;Health&quot;, eHP / eMaxHP); setBarVisible(&quot;Health&quot;, 0)]
+</command>
+        <label>healDamage</label>
+        <group>8. Damage</group>
+        <sortby></sortby>
+        <autoExecute>true</autoExecute>
+        <includeLabel>false</includeLabel>
+        <applyToTokens>false</applyToTokens>
+        <fontColorKey>black</fontColorKey>
+        <fontSize>1.00em</fontSize>
+        <minWidth></minWidth>
+        <maxWidth></maxWidth>
+        <allowPlayerEdits>false</allowPlayerEdits>
+        <toolTip></toolTip>
+        <displayHotKey>true</displayHotKey>
+        <commonMacro>false</commonMacro>
+        <compareGroup>true</compareGroup>
+        <compareSortPrefix>true</compareSortPrefix>
+        <compareCommand>true</compareCommand>
+        <compareIncludeLabel>true</compareIncludeLabel>
+        <compareAutoExecute>true</compareAutoExecute>
+        <compareApplyToSelectedTokens>true</compareApplyToSelectedTokens>
+      </net.rptools.maptool.model.MacroButtonProperties>
+    </entry>
+    <entry>
+      <int>47</int>
+      <net.rptools.maptool.model.MacroButtonProperties>
+        <macroUUID>2571761c-472a-4425-bc66-45d0f8c39983</macroUUID>
+        <saveLocation>Token</saveLocation>
+        <index>47</index>
+        <colorKey>default</colorKey>
+        <hotKey>None</hotKey>
+        <command>[h: vSpellName = json.get(macro.args, &quot;spell&quot;)]
+[h: vLevel     = json.get(macro.args, &quot;level&quot;)]
+[h: vSchool    = json.get(macro.args, &quot;school&quot;)]
+
+
+[h,switch(vSchool),code:
+	case &quot;A&quot;: { [vFontColor = &quot;white&quot;] [vColor = &quot;blue&quot;]};
+	case &quot;C&quot;: { [vFontColor = &quot;black&quot;] [vColor = &quot;orange&quot;]};
+	case &quot;D&quot;: { [vFontColor = &quot;black&quot;] [vColor = &quot;white&quot;]};
+	case &quot;E&quot;: { [vFontColor = &quot;black&quot;] [vColor = &quot;yellow&quot;]};
+	case &quot;V&quot;: { [vFontColor = &quot;white&quot;] [vColor = &quot;red&quot;]};
+	case &quot;I&quot;: { [vFontColor = &quot;white&quot;] [vColor = &quot;purple&quot;]};
+	case &quot;N&quot;: { [vFontColor = &quot;white&quot;] [vColor = &quot;black&quot;]};
+	case &quot;T&quot;: { [vFontColor = &quot;white&quot;] [vColor = &quot;green&quot;]};
+	default : { [vFontColor = &quot;black&quot;] [vColor = &quot;default&quot;]}]
+
+[r, if(!hasMacro(vSpellName)), CODE:{
+		[h: vCommand = &quot;[macro(&apos;Show a Spell@Lib:SpellLibrary&apos;):&apos;&quot; + vSpellName + &quot;&apos;]&quot;]
+		[h: vTooltip=  &apos;Show the &apos; + vSpellName + &apos; spell.&apos;]
+		[h: vProp    = json.set(&quot;{}&quot;, &quot;color&quot;, vColor, &quot;fontColor&quot;, vFontColor, &quot;playerEditable&quot;, 0, &quot;tooltip&quot;, vTooltip, &quot;group&quot;, &quot;Spells&quot;, &quot;sortBy&quot;, &quot;_&quot;+vLevel)]
+		[h: createMacro(vSpellName, vCommand, vProp, &apos;json&apos;)]
+		Added [r:vSpellName] macro.
+};{
+	    [r:vSpellName] macro already exists.
+}]</command>
+        <label>createMacro</label>
+        <group>2. Effects</group>
+        <sortby></sortby>
+        <autoExecute>true</autoExecute>
+        <includeLabel>false</includeLabel>
+        <applyToTokens>false</applyToTokens>
+        <fontColorKey>black</fontColorKey>
+        <fontSize>1.00em</fontSize>
+        <minWidth></minWidth>
+        <maxWidth></maxWidth>
+        <allowPlayerEdits>false</allowPlayerEdits>
+        <toolTip></toolTip>
         <displayHotKey>true</displayHotKey>
         <commonMacro>false</commonMacro>
         <compareGroup>true</compareGroup>
