@@ -63,7 +63,12 @@
 3) Click on &quot;Spell Library&quot;, browse spells, and add them via the &quot;Learn&quot; button on the right of each spell
 4) Click on &quot;Spellbook&quot; macro, and check your spells. You can prepare them by clicking the dot on the left.
 5) To cast, click on the &quot;+&quot; sign on the left of the spell to read the spell description. Select the tokens that will be affected, and click on the keyword to trigger the effect (saving throw, skill check, etc)</notes>
-  <gmNotes>Update 1.4 (5/15/2020)
+  <gmNotes>Update 1.4.1 (5/17/2020)
+
+- Fix bug where rolling for damage would fail if no tokens were targeted
+- Remove lone quote being printed to chat if changing the casting stat of a spell not known
+
+Update 1.4 (5/15/2020)
 
 - New feature: damage prompts to the GM! GMs will now receive a prompt in the chat when a damage link is clicked on a spell while targets are selected. The GM can change how much damage each target should receive, and press the DMG button to confirm. All targets will take the damage automatically. Feature can be disabled in Config, and requires MapTool 1.7 to work.
 - Corrected a few spells having duplicated condition links
@@ -127,7 +132,7 @@ Update 1.1 (5/4/2020)
         <string>libversion</string>
         <net.rptools.CaseInsensitiveHashMap_-KeyValue>
           <key>libversion</key>
-          <value class="string">1.4</value>
+          <value class="string">1.4.1</value>
           <outer-class reference="../../../.."/>
         </net.rptools.CaseInsensitiveHashMap_-KeyValue>
       </entry>
@@ -1144,7 +1149,7 @@ a{
 };{}]
 
 
-
+[h: outputGM = &apos;&apos;]
 [h, if(listCount(vPrompts) &gt; 0), CODE:{
 	[processorLink = macroLinkText(&quot;damageTargets@Lib:SpellLibrary&quot;, &quot;none&quot;)]
 	[vButton = if(vHeal, &quot;HEAL &quot;, &quot;DMG &quot;) + vTotal]
@@ -1172,7 +1177,7 @@ a{
 	[outputGM = outputGM + vDrops + &quot;&lt;/form&gt;&quot;]
 };{}]
 
-[gm, r: strformat(outputGM)]</command>
+[gm, r, if(outputGM != &apos;&apos;): strformat(outputGM)]</command>
         <label>damage</label>
         <group>2. Effects</group>
         <sortby></sortby>
@@ -2502,7 +2507,7 @@ a{
 		[h: jsonSpell = json.set( jsonSpell, &apos;stat&apos;, vStat)]
 		[h: vSpells = json.set(vSpells, vSpell, jsonSpell)]
 		Changed [r:vSpell] Spellcasting Ability to [r:vStat].
-	}]
+	};{}]
 };{}]
 
 
