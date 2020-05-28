@@ -62,8 +62,17 @@
 2) Impersonate the token you wish to use to cast spells
 3) Click on &quot;Spell Library&quot;, browse spells, and add them via the &quot;Learn&quot; button on the right of each spell
 4) Click on &quot;Spellbook&quot; macro, and check your spells. You can prepare them by clicking the dot on the left.
-5) To cast, click on the &quot;+&quot; sign on the left of the spell to read the spell description. Select the tokens that will be affected, and click on the keyword to trigger the effect (saving throw, skill check, etc)</notes>
-  <gmNotes>Update 1.4.1 (5/17/2020)
+5) To cast, click on the &quot;+&quot; sign on the left of the spell to read the spell description. Select the tokens that will be affected, and click on the keyword to trigger the effect (saving throw, skill check, etc)
+
+Token variables used by the Spell Library:
+
+- Spells, to store the spells known to a token
+- SpellbookOrder, to store the spell order in a token&apos;s spellbook</notes>
+  <gmNotes>Update 1.4.2 (5/28/2020)
+
+- The sort order within a token&apos;s spellbook will now be remembered next time the spellbook is opened again. The order is stored in the variable &quot;SpellbookOrder&quot;
+
+Update 1.4.1 (5/17/2020)
 
 - Fix bug where rolling for damage would fail if no tokens were targeted
 - Remove lone quote being printed to chat if changing the casting stat of a spell not known
@@ -132,7 +141,7 @@ Update 1.1 (5/4/2020)
         <string>libversion</string>
         <net.rptools.CaseInsensitiveHashMap_-KeyValue>
           <key>libversion</key>
-          <value class="string">1.4.1</value>
+          <value class="string">1.4.2</value>
           <outer-class reference="../../../.."/>
         </net.rptools.CaseInsensitiveHashMap_-KeyValue>
       </entry>
@@ -673,11 +682,14 @@ Update 1.1 (5/4/2020)
 	[switchToken(vCurrentId)]
 	[vKnown = getProperty(&quot;Spells&quot;)]
 	[vName  = getName()]
+	[vOrder = getProperty(&quot;SpellbookOrder&quot;)]
 	[if(json.isEmpty(vKnown)): vKnown = &quot;{}&quot;]
+	[if(json.isEmpty(vOrder)): vOrder = &quot;[]&quot;]
 };{
 	[vCast  = 0]
 	[vKnown = &quot;{}&quot;]
 	[vName = &quot;&quot;]
+	[vOrder = &quot;[]&quot;]
 }]
 
 [h: vCustomSpells = getLibProperty(&apos;CustomSpells&apos;, vLib)]
@@ -714,6 +726,8 @@ Update 1.1 (5/4/2020)
 	var vListedSpells = vCast == 1 ? vSpells.concat(vCustomSpells).filter(filterKnownSpells) : vSpells.concat(vCustomSpells);
 	
 	var vLength = vListedSpells.length;
+
+	var vOrder  = [r: vOrder];
 
 	var linkCondition = &quot;[r: macroLinkText(&apos;condition@Lib:SpellLibrary&apos;, &apos;all&apos;, &apos;&apos;, vCurrentId)]&quot;;
 	var linkDamage = &quot;[r: macroLinkText(&apos;damage@Lib:SpellLibrary&apos;, &apos;all&apos;, &apos;&apos;, vCurrentId)]&quot;;
@@ -2965,6 +2979,10 @@ The spell will be casted on those who are selected at the time of the casting.</
 	&lt;input type=&quot;hidden&quot; name=&quot;action&quot; value=&quot;&quot;   id=&quot;formEditSpellAction&quot;&gt;
 &lt;/form&gt;
 
+&lt;form action=&quot;[r: macroLinkText(&apos;addOrder@Lib:SpellLibrary&apos;, &apos;none&apos;, &apos;&apos;, vCurrentId)]&quot; method=&quot;json&quot; id=&quot;formAddOrder&quot;&gt;
+	&lt;input type=&quot;hidden&quot; name=&quot;col&quot; value=&quot;&quot; id = &quot;formAddOrderCol&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;asc&quot; value=&quot;&quot; id=&quot;formAddOrderAsc&quot;&gt;
+&lt;/form&gt;
+
 &lt;form action=&quot;[r: macroLinkText(&apos;savingThrow@Lib:SpellLibrary&apos;, &apos;all&apos;, &apos;&apos;, vCurrentId)]&quot; method=&quot;json&quot; id=&quot;formSavingThrow&quot;&gt;
 	&lt;input type=&quot;hidden&quot; name=&quot;casterId&quot;          value=&quot;[r:vCurrentId]&quot;    &gt;&lt;input type=&quot;hidden&quot; name=&quot;casterName&quot; value=&quot;[r: vName]&quot;&gt;	
 	&lt;input type=&quot;hidden&quot; name=&quot;spell&quot;  value=&quot;&quot;     id=&quot;formSavingThrowName&quot;&gt;&lt;input type=&quot;hidden&quot; name=&quot;stat&quot;   value=&quot;&quot; id=&quot;formSavingThrowStat&quot;&gt;
@@ -3334,7 +3352,25 @@ The spell will be casted on those who are selected at the time of the casting.</
         // Refreshes the table
         filterSpells();
 
-		enableSortSpellTable(table);        
+		enableSortSpellTable(table);
+
+		if (vCast){
+			let tableRows = Array.from(table.rows);
+			let tds       = Array.from(table.rows[0].cells);
+			
+			tableRows.shift();                                                                 // remove header row
+			tableRows = tableRows.filter((element, index) =&gt; {  return index % 2 === 0;});      // exclude spell description rows
+			for (let i = 0; i &lt; vOrder.length; i++){
+    			let col   = vOrder[i].col;
+    			let asc   = vOrder[i].asc;
+    			tds[col].asc = asc;
+
+    			tableRows.sort(comparer(col, asc))
+        					 .forEach(tr =&gt; {   table.appendChild(tr);  table.appendChild(document.getElementById(&apos;Desc-&apos; + tr.id));});
+			}
+		}
+
+		
 		} catch (err){
 			console.log(err);
 		}
@@ -3342,23 +3378,35 @@ The spell will be casted on those who are selected at the time of the casting.</
 
     }
 
-	//  Add the click listeners to the column names of the main table
-   function enableSortSpellTable(table){
-		const getCellValue = (tr, idx) =&gt; {
+	// Utility functions for sorting
+	const getCellValue = (tr, idx) =&gt; {
 			let cell = tr.children[idx];
 			return cell.getAttribute(&apos;data-sort&apos;) || cell.innerText;
-		};
+	};
 
-		const comparer = (idx, asc) =&gt; (a, b) =&gt; ((v1, v2) =&gt; 
+	const comparer = (idx, asc) =&gt; (a, b) =&gt; ((v1, v2) =&gt; 
     		v1 !== &apos;&apos; &amp;&amp; v2 !== &apos;&apos; &amp;&amp; !isNaN(v1) &amp;&amp; !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
-    		)(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+    )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+	//  Add the click listeners to the column names of the main table
+   function enableSortSpellTable(table){
 
 		table.querySelectorAll(&apos;th.spellHeader&apos;).forEach(th =&gt; th.addEventListener(&apos;click&apos;, (() =&gt; {
 			try{
     			let tableRows = Array.from(table.rows);
+    			let colIndex  = Array.from(th.parentNode.children).indexOf(th);
+    			let asc       = this.asc = !this.asc;
+
+    			if(vCast){
+    				// Stores the sort ordr for next time
+					document.getElementById(&apos;formAddOrderCol&apos;).value = colIndex;
+					document.getElementById(&apos;formAddOrderAsc&apos;).value = asc ? 1 : 0;		
+					document.getElementById(&apos;formAddOrder&apos;).submit();
+    			}
+    			
     			tableRows.shift();             // remove header row
     			tableRows = tableRows.filter((element, index) =&gt; {  return index % 2 === 0;});
-    			tableRows.sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+    			tableRows.sort(comparer(colIndex, asc))
         					 .forEach(tr =&gt; {   table.appendChild(tr);  table.appendChild(document.getElementById(&apos;Desc-&apos; + tr.id));});
 			} catch (err){ console.log(err); }
 		})));
@@ -4274,6 +4322,46 @@ default: {}
         <maxWidth></maxWidth>
         <allowPlayerEdits>false</allowPlayerEdits>
         <toolTip></toolTip>
+        <displayHotKey>true</displayHotKey>
+        <commonMacro>false</commonMacro>
+        <compareGroup>true</compareGroup>
+        <compareSortPrefix>true</compareSortPrefix>
+        <compareCommand>true</compareCommand>
+        <compareIncludeLabel>true</compareIncludeLabel>
+        <compareAutoExecute>true</compareAutoExecute>
+        <compareApplyToSelectedTokens>true</compareApplyToSelectedTokens>
+      </net.rptools.maptool.model.MacroButtonProperties>
+    </entry>
+    <entry>
+      <int>48</int>
+      <net.rptools.maptool.model.MacroButtonProperties>
+        <macroUUID>8092e229-f64e-47e9-a0ee-1ebf8f402451</macroUUID>
+        <saveLocation>Token</saveLocation>
+        <index>48</index>
+        <colorKey>default</colorKey>
+        <hotKey>None</hotKey>
+        <command>[h: vCol = json.get(macro.args, &quot;col&quot;)]
+[h: vAsc = json.get(macro.args, &quot;asc&quot;)]
+
+[h: vOrder = getProperty(&quot;SpellbookOrder&quot;)]
+[h, if(json.isEmpty(vOrder)): vOrder = &quot;[]&quot;]
+
+[h: vOrder = json.path.delete(vOrder, &quot;[?(@.col == &quot;+ vCol +&quot;)]&quot;)]
+[h: vOrder = json.append(vOrder, json.set(&quot;{}&quot;, &quot;col&quot;, vCol, &quot;asc&quot;, vAsc))]
+
+[h: setProperty(&quot;SpellbookOrder&quot;, vOrder)]</command>
+        <label>addOrder</label>
+        <group>3. Spellbook Management</group>
+        <sortby></sortby>
+        <autoExecute>true</autoExecute>
+        <includeLabel>false</includeLabel>
+        <applyToTokens>false</applyToTokens>
+        <fontColorKey>black</fontColorKey>
+        <fontSize>1.00em</fontSize>
+        <minWidth></minWidth>
+        <maxWidth></maxWidth>
+        <allowPlayerEdits>false</allowPlayerEdits>
+        <toolTip>Adds to the sort order of a token&apos;s Spellbook</toolTip>
         <displayHotKey>true</displayHotKey>
         <commonMacro>false</commonMacro>
         <compareGroup>true</compareGroup>
