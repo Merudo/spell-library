@@ -68,7 +68,11 @@ Token variables used by the Spell Library:
 
 - Spells, to store the spells known to a token
 - SpellbookOrder, to store the spell order in a token&apos;s spellbook</notes>
-  <gmNotes>Update 1.4.2 (5/28/2020)
+  <gmNotes>Update 1.4.3 (ongoing)
+
+- Fix bug when changing the casting stat of a spell for a caster with a empty spellbook
+
+Update 1.4.2 (5/28/2020)
 
 - The sort order within a token&apos;s spellbook will now be remembered next time the spellbook is opened again. The order is stored in the variable &quot;SpellbookOrder&quot;
 
@@ -141,7 +145,7 @@ Update 1.1 (5/4/2020)
         <string>libversion</string>
         <net.rptools.CaseInsensitiveHashMap_-KeyValue>
           <key>libversion</key>
-          <value class="string">1.4.2</value>
+          <value class="string">1.4.3</value>
           <outer-class reference="../../../.."/>
         </net.rptools.CaseInsensitiveHashMap_-KeyValue>
       </entry>
@@ -2473,6 +2477,7 @@ a{
 [h: vAction = json.get(macro.args, &quot;action&quot;)]
 [h: vStat = json.get(macro.args, &quot;stat&quot;)]
 [h: vSpells = getProperty(&quot;Spells&quot;)]
+[h, if (json.isEmpty(vSpells)): vSpells = &quot;{}&quot;]
 [h: vMacroName = &apos;Spellbook&apos;]
 
 [if(vAction == &apos;forget&apos;), CODE:{
